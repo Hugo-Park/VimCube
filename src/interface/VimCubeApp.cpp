@@ -1,14 +1,33 @@
-#include "VimCube-title.h"
 #include <iostream>
-using namespace std;
+#include "VimCubeApp.h"
+#include "InputCommands.h"
+#include "KeyBinding.h"
 
+/*
+    Function Name : VImCubeApp
+    Parameters : -
+    Return Type : -
+    Description : Constructor for VimCubeApp object
+*/
+VimCubeApp::VimCubeApp() {};
+
+/*
+    Function Name : setActiveTab
+    Parameters : int tabNum
+    Return Type : -
+    Description : Set activeTab variable
+*/
+void VimCubeApp::setActiveTab(int tabNum)
+{
+    activeTab = tabNum;
+}
 /*
     Function Name : createTitleScreen
     Parameters : int* activeTab, ftxui::ScreenInteractive& screen
     Return Type : ftxui::Component
     Description : Create title screen by rendering menu(left) and title(right)
 */
-ftxui::Component createTitleScreen(int* activeTab, ftxui::ScreenInteractive& screen)
+ftxui::Component VimCubeApp::createTitleScreen(ftxui::ScreenInteractive& screen)
 {
     using namespace ftxui;
 
@@ -21,16 +40,16 @@ ftxui::Component createTitleScreen(int* activeTab, ftxui::ScreenInteractive& scr
 
     // Create menu and option
     MenuOption option;
-    option.on_enter = [&screen, activeTab] {
+    option.on_enter = [&] {
         if (selected == 0)
         {
-            *activeTab = 1;
+            activeTab = 1;
             return;
         }
 
         else if (selected == 1)
         {
-            *activeTab = 1;
+            activeTab = 1;
             return;
         }
 
@@ -82,21 +101,30 @@ ftxui::Component createTitleScreen(int* activeTab, ftxui::ScreenInteractive& scr
     Return Type : ftxui::Component
     Description : Create new workspace by rendering viewport(left) and command window(right)
 */
-ftxui::Component createWorkSpace(int* activeTab, ftxui::ScreenInteractive& screen)
+ftxui::Component VimCubeApp::createWorkSpace(ftxui::ScreenInteractive& screen)
 {
     using namespace ftxui;
 
     static std::string commandInput = "";
     static std::vector<std::string> commandHistory;
 
+    // set KeyBinding object
+    static KeyBinding keyBinding;
+    static bool isKeyBindingSet = false;
+    if (!isKeyBindingSet)
+    {
+        keyBinding.setPreDefinedKeyBinding(*(this), commandHistory);
+        isKeyBindingSet = true;
+    }
+
     // Create input box
-    auto inputBox = Input(&commandInput, "");
+    auto inputBox = Input(&commandInput, "...");
 
     auto rightShell = Renderer(inputBox, [=] {
         Elements historyElements;
 
         if (commandHistory.empty()) {
-            historyElements.push_back(text("Command Log Here...") | dim);
+            historyElements.push_back(text("Press colon(:)...") | dim);
         }
 
         // Log auto-scrolling
@@ -117,12 +145,13 @@ ftxui::Component createWorkSpace(int* activeTab, ftxui::ScreenInteractive& scree
         return vbox({
             text("Command Window") | bold | center,
             separator(),
-            vbox(move(historyElements)) | flex,
+            vbox(std::move(historyElements)) | flex,
             separator(),
             hbox({
-                text("VimCube$") | bold,
-                inputBox->Render()
-            })
+                text("$") | bold,
+                inputBox->Render() | flex,
+                text(keyBinding.printKeyBuffer()) | bold | center | size(WIDTH, EQUAL, 5) | color(Color::Yellow1)
+            }),
         }) | border;
     });
 
@@ -148,26 +177,60 @@ ftxui::Component createWorkSpace(int* activeTab, ftxui::ScreenInteractive& scree
         }) | flex;
     });
 
-    // Predefined commmand handling
+    // return CatchEvent()
     return CatchEvent(mainLayout, [=, &screen](Event event) {
         
+        // enter key event handling
         if (event == Event::Return) {
             if (commandInput.empty()) return true;
-
-            commandHistory.push_back(">" + commandInput);
-
-            if (commandInput == ":clear") {
-                commandHistory.clear();
-            }
-            else if (commandInput == ":exit" || commandInput == ":q") {
-                *activeTab = 0;
+            
+            if (commandInput[0] == ':')
+            {
+                InputCommands binding;  // construct InputCommands class
+                binding.setPredefinedCommands(*(this), commandHistory);
+                commandHistory.push_back(commandInput);
+                binding.runCommand(commandInput); // run predifined command
             }
 
             commandInput.clear();
-
             screen.Post(Event::Custom);
             return true;
         }
+        
+        // insert string if it has a colon(:) in first character
+        if (event.is_character())
+        {
+            if (commandInput.empty())
+            {
+                // if string is not starting with colon(:)
+                if (event.character() != ":") 
+                {
+                    keyBinding.runKeyBinding(event); // run key binding
+                    return true; // nothing happens on the display
+                }
+            }
+        }
+
         return false;
     });
+
+}
+
+/*
+    Function Name : createTab
+    Parameters : ftxui::ScreenInteractive& screen
+    Return Type : ftxui::Component
+    Description : Constructor for VimCubeApp object
+*/
+ftxui::Component VimCubeApp::createTab(ftxui::ScreenInteractive& screen)
+{
+    auto titleScreen = this->createTitleScreen(screen);
+    auto workSpace = this->createWorkSpace(screen);
+
+    auto mainTab = ftxui::Container::Tab({
+        titleScreen,
+        workSpace
+    }, &activeTab);
+
+    return mainTab;
 }

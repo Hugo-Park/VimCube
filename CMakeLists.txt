@@ -15,8 +15,9 @@ FetchContent_Declare(ftxui
 )
  
 FetchContent_MakeAvailable(ftxui)
- 
-add_executable(main src/main.cpp src/VimCube-title.cpp)
+
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+add_executable(main ${SOURCES})
 
 target_include_directories(main PRIVATE
     ${ftxui_SOURCE_DIR}/include

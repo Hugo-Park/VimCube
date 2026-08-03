@@ -1,22 +1,14 @@
 #include <iostream>
-#include "VimCube-title.h"
+#include "interface/VimCubeApp.h"
 using namespace std;
 using namespace ftxui;
 
 int main()
 {
     auto screen = ScreenInteractive::FullscreenAlternateScreen();
-    int activeTab = 0;
+    VimCubeApp vimCube;
 
-    auto titleScreen = createTitleScreen(&activeTab, screen);
-    auto workSpace = createWorkSpace(&activeTab, screen);
-
-    auto mainTab = Container::Tab({
-        titleScreen,
-        workSpace
-    }, &activeTab);
-
-    screen.Loop(mainTab);
+    screen.Loop(vimCube.createTab(screen));
 
     return 0;
 }

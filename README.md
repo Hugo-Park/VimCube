@@ -20,7 +20,7 @@
 
 - Basic Geometry Types
 
-- Drawing Geometries on canvas Using Braile Dots
+- Drawing Geometries on Canvas using Braille Dots
 
 
 ## Planned

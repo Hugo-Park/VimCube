@@ -32,16 +32,16 @@ namespace vimcube::camera {
     
     public:
         // Constructor
-        Camera(vimcube::camera::ProjectionMode projectionMode, vimcube::geometry::Vector3d camPosition, vimcube::geometry::Vector3d target, vimcube::geometry::Vector3d up) : projectionMode_(projectionMode), camPosition_(camPosition), target_(target), up_(up) {};
+        Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& camPosition, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up) : projectionMode_(projectionMode), camPosition_(camPosition), target_(target), up_(up) {};
 
         // Setter
-        void setProjectionMode(vimcube::camera::ProjectionMode projectionMode);
-        void setTarget(vimcube::geometry::Vector3d target);
+        void setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode);
+        void setTarget(const vimcube::geometry::Vector3d& target);
         
         // Getter
-        vimcube::camera::ProjectionMode getProjectionMode() const;
-        vimcube::geometry::Vector3d getCamPosition() const;
-        vimcube::geometry::Vector3d getTarget() const;
+        const vimcube::camera::ProjectionMode& getProjectionMode() const;
+        const vimcube::geometry::Vector3d& getCamPosition() const;
+        const vimcube::geometry::Vector3d& getTarget() const;
         float getZoom() const;  // Only for Isometric mode
 
         // Methods

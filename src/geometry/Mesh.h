@@ -15,9 +15,9 @@ namespace vimcube::geometry {
     
     public:
         Mesh() = default;
-        Mesh(std::vector<Vertex> vertices, std::vector<Edge> edges) : vertices_(vertices), edges_(edges) {};
-        const std::vector<Vertex> getVertices() const;
-        const std::vector<Edge> getEdges() const;
+        Mesh(const std::vector<Vertex>& vertices, const std::vector<Edge>& edges) : vertices_(vertices), edges_(edges) {};
+        const std::vector<Vertex>& getVertices() const;
+        const std::vector<Edge>& getEdges() const;
     };
 }
 #endif

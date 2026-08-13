@@ -7,7 +7,7 @@ namespace vimcube::geo_draw {
         Return Type : void
         Description : Draw a Mesh object
     */
-    void draw(vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas)
+    void draw(const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas)
     {
         // Set canvas center point
         float centerX = canvas.width() / 2.0f;

@@ -40,7 +40,7 @@ namespace vimcube::geometry {
     
     public:
         PointCloud() = default;
-        PointCloud(std::vector<Point3d> ptCloud) : ptCloud_(ptCloud) {};
+        PointCloud(const std::vector<Point3d>& ptCloud) : ptCloud_(ptCloud) {};
     };
 
     /*
@@ -65,7 +65,7 @@ namespace vimcube::geometry {
         Point3d end_;
 
         Line3d() = default;
-        Line3d(Point3d start, Point3d end) : start_(start), end_(end) {};
+        Line3d(const Point3d& start, const Point3d& end) : start_(start), end_(end) {};
     };
 
     /*
@@ -76,7 +76,7 @@ namespace vimcube::geometry {
         std::vector<Point3d> segments;
 
         PolyLine() = default;
-        PolyLine(std::vector<Point3d> segments) : segments(segments) {};
+        PolyLine(const std::vector<Point3d>& segments) : segments(segments) {};
     };
 
     /*
@@ -88,7 +88,7 @@ namespace vimcube::geometry {
         float distance;
 
         Plane() = default;
-        Plane(Vector3d normal) : normal(normal) {};
+        Plane(const Vector3d& normal) : normal(normal) {};
     };
 
     /*
@@ -100,9 +100,9 @@ namespace vimcube::geometry {
         Vector3d normal;
         vimcube::utility::Color color;
 
-        Vertex(Point3d position) : position(position), normal(Vector3d(0.0f, 0.0f, 0.0f)), color(255, 255, 255, 1.0f) {};
-        Vertex(Point3d position, Vector3d normal) : position(position), normal(normal), color(255, 255, 255, 1.0f) {};
-        Vertex(Point3d position, Vector3d normal, vimcube::utility::Color color) : position(position), normal(normal), color(color) {};
+        Vertex(const Point3d& position) : position(position), normal(Vector3d(0.0f, 0.0f, 0.0f)), color(255, 255, 255, 1.0f) {};
+        Vertex(const Point3d& position, const Vector3d& normal) : position(position), normal(normal), color(255, 255, 255, 1.0f) {};
+        Vertex(const Point3d& position, const Vector3d& normal, const vimcube::utility::Color& color) : position(position), normal(normal), color(color) {};
     };
 
     /*

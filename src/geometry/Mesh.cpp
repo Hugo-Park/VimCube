@@ -7,7 +7,7 @@ namespace vimcube::geometry {
         Return Type : std::vector<Vertex>
         Description : Return vertices
     */
-    const std::vector<Vertex> Mesh::getVertices() const
+    const std::vector<Vertex>& Mesh::getVertices() const
     {
         return vertices_;
     }
@@ -18,7 +18,7 @@ namespace vimcube::geometry {
         Return Type : std::vector<Edge>
         Description : Return edges 
     */
-    const std::vector<Edge> Mesh::getEdges() const
+    const std::vector<Edge>& Mesh::getEdges() const
     {
         return edges_;
     }

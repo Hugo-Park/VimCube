@@ -55,6 +55,9 @@ namespace vimcube::camera {
         void zoomIn(float amount);
         void zoomOut(float amount);
 
+        // Projection
+        void projectToCanvas(const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight);
+
         // Reset
         void resetCamera();
     };

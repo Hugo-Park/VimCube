@@ -1,6 +1,7 @@
 #include "Camera.h"
-
-namespace vimcube::camera {
+#include <cmath>
+namespace vimcube::camera
+{
 
     // Setter
     void Camera::setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode)
@@ -33,4 +34,17 @@ namespace vimcube::camera {
     {
         return this->zoom_;
     }
-}
+
+    void Camera::updateCameraPosition()
+    {
+        // Convert spherical coordinates to cartesian coordinates
+        float tempX = this->radius_ * sin(this->elevation_) * cos(this->azimuth_);
+        float tempY = this->radius_ * sin(this->elevation_) * sin(this->azimuth_);
+        float tempZ = this->radius_ * cos(this->elevation_);
+
+        // Update Camera position using target position
+        this->camPosition_.x = this->target_.x + tempX;
+        this->camPosition_.y = this->target_.y + tempY;
+        this->camPosition_.z = this->target_.z + tempZ;
+    }
+}    // namespace vimcube::camera

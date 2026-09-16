@@ -24,12 +24,18 @@ namespace vimcube::camera {
 
         // For Isometric Mode
         float zoom_ = 10.0f;
+        float zoomMin_ = 0.1f;
+        float zoomMax_ = 100.f;
 
         // For Perspective Mode
         float fieldOfView_ = 90.0f;
         float nearClip_ = 0.1f;
         float farClip_ = 100.0f;
     
+        // Define special constants
+        static constexpr float EPSILON = 0.01f;
+        static constexpr float PI = 3.141592;
+
     public:
         // Constructor
         Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& camPosition, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up) : projectionMode_(projectionMode), camPosition_(camPosition), target_(target), up_(up) {};
@@ -45,6 +51,7 @@ namespace vimcube::camera {
         float getZoom() const;  // Only for Isometric mode
 
         // Methods
+        // angle parameters are always Radian
         void updateCameraPosition();
         void orbitUp(float angle);
         void orbitDown(float angle);

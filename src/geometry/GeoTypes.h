@@ -2,7 +2,7 @@
 #define GEO_TYPES_H
 #include <cstdint>
 #include <vector>
-#include "../render/Utils.h"
+#include "../utility/Utils.h"
 
 namespace vimcube::geometry {
     /*

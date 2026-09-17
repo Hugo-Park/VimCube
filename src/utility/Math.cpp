@@ -2,6 +2,20 @@
 
 namespace vimcube::math {
     
+    void initMatrix3by3(Matrix3by3& m)
+    {
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                m.entries[i][j] = 0;
+    }
+
+    void initMatrix4by4(Matrix4by4& m)
+    {
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                m.entries[i][j] = 0;
+    }
+
     Matrix3by3 constructMatrix3By3(const float(&entries)[3][3])
     {
         Matrix3by3 returnMatrix;
@@ -53,13 +67,29 @@ namespace vimcube::math {
         return cofactor1 - cofactor2 + cofactor3 - cofactor4;
     }
 
-    Matrix4by4 getProduct4by4(const Matrix3by3& m1, const Matrix3by3& m2)
+    Matrix3by3 getProduct3by3(const Matrix3by3& m1, const Matrix3by3& m2)
     {
+        Matrix3by3 returnMatrix;
+        initMatrix3by3(returnMatrix);
 
+        for (int i = 0; i < 3; i++)
+            for (int k = 0; k < 3; k++)
+                for (int j = 0; j < 3; j++)
+                    returnMatrix.entries[i][j] += m1.entries[i][k] * m2.entries[k][j];
+
+        return returnMatrix;
     }
 
     Matrix4by4 getProduct4by4(const Matrix4by4& m1, const Matrix4by4& m2)
     {
+        Matrix4by4 returnMatrix;
+        initMatrix4by4(returnMatrix);
 
+        for (int i = 0; i < 4; i++)
+            for (int k = 0; k < 4; k++)
+                for (int j = 0; j < 4; j++)
+                    returnMatrix.entries[i][j] += m1.entries[i][k] * m2.entries[k][j];
+
+        return returnMatrix;
     }
 }

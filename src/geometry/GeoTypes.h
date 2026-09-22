@@ -2,9 +2,26 @@
 #define GEO_TYPES_H
 #include <cstdint>
 #include <vector>
+#include <cmath>
 #include "../utility/Utils.h"
 
 namespace vimcube::geometry {
+
+    /*
+        Class Name : Point4d
+        Description : Point4d is constructed by three points and one additional value for homogeneous coordinate system
+    */
+    struct Point4d {
+        float x;
+        float y;
+        float z;
+        float w = 1;
+
+        Point4d() = default;
+        Point4d(float x, float y, float z) : x(x), y(y), z(z) {};
+        Point4d(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {};
+    };
+
     /*
         Class Name : Point3d
         Description : Point3d is constructed by three points.
@@ -44,6 +61,23 @@ namespace vimcube::geometry {
     };
 
     /*
+        Class Name : Vector4d 
+        Description : Vector4d is constructed by three points and one additional value for homogeneous coordinate system
+
+    */
+    struct Vector4d {
+        float x;
+        float y;
+        float z;
+        float w = 0;
+
+        Vector4d() = default;
+        Vector4d(float x, float y, float z) : x(x), y(y), z(z) {};
+        Vector4d(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {};
+        float getSize() { return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2) + pow(w, 2)); }
+    };
+
+    /*
         Class Name : Vector3d 
         Description : Vector3d is constructed by three points.
     */
@@ -54,6 +88,7 @@ namespace vimcube::geometry {
 
         Vector3d() = default;
         Vector3d(float x, float y, float z) : x(x), y(y), z(z) {};
+        float getSize() { return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)); }
     };
 
     /*

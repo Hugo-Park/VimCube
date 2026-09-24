@@ -142,6 +142,23 @@ namespace vimcube::math {
     }
 
     /*
+        Function Name : castToPoint4d
+        Parameters : const vimcube::geometry::Point4d& p
+        Return Type : vimcube::geometry::Point4d
+        Description : Cast to Point4d
+    */
+    vimcube::geometry::Point4d castToPoint4d(const vimcube::geometry::Point3d& p)
+    {
+        vimcube::geometry::Point4d returnPoint;
+
+        returnPoint.x = p.x;
+        returnPoint.y = p.y;
+        returnPoint.z = p.z;
+
+        return returnPoint;
+    }
+
+    /*
         Function Name : castToVector4d
         Parameters : const vimcube::geometry::Vector3d& v
         Return Type : vimcube::geometry::Vector4d
@@ -159,6 +176,24 @@ namespace vimcube::math {
     }
 
     /*
+        Function Name : getProduct4by4andPoint4d
+        Parameters : const Matrix4by4& m, const vimcube::geometry::Point4d p
+        Return Type : vimcube::geometry::Point4d
+        Description : Get product of Matrix4by4 and Point4d
+    */
+    vimcube::geometry::Point4d getProduct4by4andPoint4d(const Matrix4by4& m, const vimcube::geometry::Point4d p)
+    {
+        vimcube::geometry::Point4d returnPoint;
+
+        returnPoint.x = m.entries[0][0] * p.x + m.entries[0][1] * p.y + m.entries[0][2] * p.z + m.entries[0][3] * p.w;
+        returnPoint.y = m.entries[1][0] * p.x + m.entries[1][1] * p.y + m.entries[1][2] * p.z + m.entries[1][3] * p.w;
+        returnPoint.z = m.entries[2][0] * p.x + m.entries[2][1] * p.y + m.entries[2][2] * p.z + m.entries[2][3] * p.w;
+        returnPoint.w = m.entries[3][0] * p.x + m.entries[3][1] * p.y + m.entries[3][2] * p.z + m.entries[3][3] * p.w;
+
+        return returnPoint;
+    }
+
+    /*
         Function Name : getProduct4by4andVector4d
         Parameters : const Matrix4by4& m, const vimcube::geometry::Vector4d v
         Return Type : vimcube::geometry::Vector4d
@@ -168,10 +203,10 @@ namespace vimcube::math {
     {
         vimcube::geometry::Vector4d returnVector;
 
-        returnVector.x = m.entries[0][0] * v.x + m.entries[1][0] * v.x + m.entries[2][0] * v.x + m.entries[3][0] * v.x;
-        returnVector.y = m.entries[0][1] * v.y + m.entries[1][1] * v.y + m.entries[2][1] * v.z + m.entries[3][1] * v.y;
-        returnVector.z = m.entries[0][2] * v.y + m.entries[1][2] * v.y + m.entries[2][2] * v.z + m.entries[3][2] * v.z;
-        returnVector.w = m.entries[0][3] * v.w + m.entries[1][3] * v.w + m.entries[2][3] * v.w + m.entries[3][3] * v.w;
+        returnVector.x = m.entries[0][0] * v.x + m.entries[0][1] * v.y + m.entries[0][2] * v.z + m.entries[0][3] * v.w;
+        returnVector.y = m.entries[1][0] * v.x + m.entries[1][1] * v.y + m.entries[1][2] * v.z + m.entries[1][3] * v.w;
+        returnVector.z = m.entries[2][0] * v.x + m.entries[2][1] * v.y + m.entries[2][2] * v.z + m.entries[2][3] * v.w;
+        returnVector.w = m.entries[3][0] * v.x + m.entries[3][1] * v.y + m.entries[3][2] * v.z + m.entries[3][3] * v.w;
 
         return returnVector;
     }
@@ -187,9 +222,9 @@ namespace vimcube::math {
     {
         vimcube::geometry::Vector3d returnVector;
 
-        returnVector.x = v2.x - v1.x;
-        returnVector.y = v2.y - v1.y;
-        returnVector.z = v2.z - v1.z;
+        returnVector.x = v1.x - v2.x;
+        returnVector.y = v1.y - v2.y;
+        returnVector.z = v1.z - v2.z;
 
         return returnVector;
     }
@@ -204,10 +239,10 @@ namespace vimcube::math {
     {
         vimcube::geometry::Vector4d returnVector;
 
-        returnVector.x = v2.x - v1.x;
-        returnVector.y = v2.y - v1.y;
-        returnVector.z = v2.z - v1.z;
-        returnVector.w = v2.w - v1.w;
+        returnVector.x = v1.x - v2.x;
+        returnVector.y = v1.y - v2.y;
+        returnVector.z = v1.z - v2.z;
+        returnVector.w = v1.w - v2.w;
 
         return returnVector;
     }
@@ -231,7 +266,7 @@ namespace vimcube::math {
     */
     float dotProductVector4d(const vimcube::geometry::Vector4d& v1, const vimcube::geometry::Vector4d& v2)
     {
-        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v1.w;
+        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
     }
 
     /*
@@ -257,7 +292,7 @@ namespace vimcube::math {
         Return Type : vimcube::geometry::Vector3d
         Description : Normalize Vector3d
     */
-    vimcube::geometry::Vector3d normalizeVector3d(vimcube::geometry::Vector3d& v)
+    vimcube::geometry::Vector3d normalizeVector3d(const vimcube::geometry::Vector3d& v)
     {
         vimcube::geometry::Vector3d returnVector;
 
@@ -274,7 +309,7 @@ namespace vimcube::math {
         Return Type : vimcube::geometry::Vector4d
         Description : Normalize Vector4d
     */
-    vimcube::geometry::Vector4d normalizeVector4d(vimcube::geometry::Vector4d& v)
+    vimcube::geometry::Vector4d normalizeVector4d(const vimcube::geometry::Vector4d& v)
     {
         vimcube::geometry::Vector4d returnVector;
 
@@ -284,5 +319,78 @@ namespace vimcube::math {
         returnVector.w = float(v.w / v.getSize());
 
         return returnVector;
+    }
+
+    /*
+        Function Name : buildOrthogonalMatrix
+        Parameters : float zoom, float aspect, float nearClip, float farClip
+        Return Type : Matrix4by4
+        Description : Build orthogonal matrix for MVP methods
+    */
+    Matrix4by4 buildOrthogonalMatrix(float zoom, float aspect, float nearClip, float farClip)
+    {
+        Matrix4by4 orthoMatrix;
+        initMatrix4by4(orthoMatrix);
+
+        orthoMatrix.entries[0][0] = float(zoom / aspect);
+        orthoMatrix.entries[1][1] = float(zoom);
+        orthoMatrix.entries[2][2] = float(2 / (farClip - nearClip));
+        orthoMatrix.entries[2][3] = float(-1 - 2 * (nearClip / (farClip - nearClip)));
+        orthoMatrix.entries[3][3] = 1.0f;
+
+        return orthoMatrix;
+    }
+
+    /*
+        Function Name : buildPerspectiveMatrix
+        Parameters : float fieldOfView, float aspect, float nearClip, float farClip
+        Return Type : Matrix4by4
+        Description : Build perspective matrix for MVP methods
+    */
+    Matrix4by4 buildPerspectiveMatrix(float fieldOfView, float aspect, float nearClip, float farClip)
+    {
+        Matrix4by4 perspectMatrix;
+        initMatrix4by4(perspectMatrix);
+        float f = float(1.0f / tan(fieldOfView / 2));
+        
+        perspectMatrix.entries[0][0] = f / aspect;
+        perspectMatrix.entries[1][1] = f;
+        perspectMatrix.entries[2][2] = (farClip + nearClip) / (nearClip - farClip);
+        perspectMatrix.entries[2][3] = (2 * farClip * nearClip) / (nearClip - farClip);
+        perspectMatrix.entries[3][2] = -1.0f;
+
+        return perspectMatrix;
+    }
+    
+    /*
+        Function Name : buildViewMatrix
+        Parameters : vimcube::geometry::Vector3d eye, vimcube::geometry::Vector3d target, vimcube::geometry::Vector3d up
+        Return Type : Matrix4by4
+        Description : Build view matrix for MVP methods
+    */
+    Matrix4by4 buildViewMatrix(vimcube::geometry::Vector3d& eye, vimcube::geometry::Vector3d& target, vimcube::geometry::Vector3d& up)
+    {
+        Matrix4by4 viewMatrix;
+        initMatrix4by4(viewMatrix);
+
+        vimcube::geometry::Vector3d forward = normalizeVector3d(subtractVector3d(target, eye));
+        vimcube::geometry::Vector3d right = normalizeVector3d(crossProductVector3d(forward, up));
+        vimcube::geometry::Vector3d trueUp = crossProductVector3d(right, forward);
+
+        viewMatrix.entries[0][0] = right.x;
+        viewMatrix.entries[0][1] = right.y;
+        viewMatrix.entries[0][2] = right.z;
+        viewMatrix.entries[0][3] = -1.0f * dotProductVector3d(eye, right);
+        viewMatrix.entries[1][0] = trueUp.x;
+        viewMatrix.entries[1][1] = trueUp.y;
+        viewMatrix.entries[1][2] = trueUp.z;
+        viewMatrix.entries[1][3] = -1.0f * dotProductVector3d(eye, trueUp);
+        viewMatrix.entries[2][0] = forward.x;
+        viewMatrix.entries[2][1] = forward.y;
+        viewMatrix.entries[2][2] = forward.z;
+        viewMatrix.entries[2][3] = -1.0f * dotProductVector3d(eye, forward);
+        viewMatrix.entries[3][3] = 1.0f;
+
+        return viewMatrix;
     }
 }

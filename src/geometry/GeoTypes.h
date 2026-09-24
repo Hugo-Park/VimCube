@@ -74,7 +74,7 @@ namespace vimcube::geometry {
         Vector4d() = default;
         Vector4d(float x, float y, float z) : x(x), y(y), z(z) {};
         Vector4d(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {};
-        float getSize() { return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2) + pow(w, 2)); }
+        float getSize() const { return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2) + pow(w, 2)); }
     };
 
     /*
@@ -88,7 +88,7 @@ namespace vimcube::geometry {
 
         Vector3d() = default;
         Vector3d(float x, float y, float z) : x(x), y(y), z(z) {};
-        float getSize() { return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)); }
+        float getSize() const { return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)); }
     };
 
     /*

@@ -32,8 +32,10 @@ namespace vimcube::math {
 
     /* Vector Methods */
 
+    vimcube::geometry::Point4d castToPoint4d(const vimcube::geometry::Point3d& p);
     vimcube::geometry::Vector4d castToVector4d(const vimcube::geometry::Vector3d& v);
 
+    vimcube::geometry::Point4d getProduct4by4andPoint4d(const Matrix4by4& m, const vimcube::geometry::Point4d p);
     vimcube::geometry::Vector4d getProduct4by4andVector4d(const Matrix4by4& m, const vimcube::geometry::Vector4d v);
 
     vimcube::geometry::Vector3d subtractVector3d(const vimcube::geometry::Vector3d& v1, const vimcube::geometry::Vector3d& v2);
@@ -44,7 +46,13 @@ namespace vimcube::math {
 
     vimcube::geometry::Vector3d crossProductVector3d(const vimcube::geometry::Vector3d& v1, const vimcube::geometry::Vector3d& v2);
 
-    vimcube::geometry::Vector3d normalizeVector3d(vimcube::geometry::Vector3d& v);
-    vimcube::geometry::Vector4d normalizeVector4d(vimcube::geometry::Vector4d& v);
+    vimcube::geometry::Vector3d normalizeVector3d(const vimcube::geometry::Vector3d& v);
+    vimcube::geometry::Vector4d normalizeVector4d(const vimcube::geometry::Vector4d& v);
+
+    /* Build Matrix for MVP Methods*/
+
+    Matrix4by4 buildOrthogonalMatrix(float zoom, float aspect, float nearClip, float farClip);
+    Matrix4by4 buildPerspectiveMatrix(float fieldOfView, float aspect, float nearClip, float farClip);
+    Matrix4by4 buildViewMatrix(vimcube::geometry::Vector3d& eye, vimcube::geometry::Vector3d& target, vimcube::geometry::Vector3d& up);
 }
 #endif

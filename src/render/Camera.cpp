@@ -35,6 +35,21 @@ namespace vimcube::camera
         return this->zoom_;
     }
 
+
+    float Camera::getFieldOfView() const
+    {
+        return this->fieldOfView_;
+    }
+
+    float Camera::getNearClip() const
+    {
+        return this->nearClip_;
+    }
+    float Camera::getFarClip() const
+    {
+        return this->farClip_;
+    }
+
     /*
         Function Name : updateCameraPosition 
         Parameters : -
@@ -179,5 +194,41 @@ namespace vimcube::camera
             }
             updateCameraPosition();
         }
+    }
+
+    vimcube::geometry::Point2d Camera::projectToCanvas(const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight)
+    {
+        float aspect = canvasWidth / canvasHeight;
+        vimcube::math::Matrix4by4 viewMatrix = vimcube::math::buildViewMatrix(this->camPosition_, this->target_, this->up_);
+        vimcube::math::Matrix4by4 projectionMatrix;
+        
+        if (this->projectionMode_ == vimcube::camera::ProjectionMode::ISOMETRIC)
+        {
+            projectionMatrix = vimcube::math::buildOrthogonalMatrix(this->zoom_, aspect, this->nearClip_, this->farClip_);
+        }
+
+        else
+        {
+            projectionMatrix = vimcube::math::buildPerspectiveMatrix(this->fieldOfView_, aspect, this->nearClip_, this->farClip_);
+        }
+
+        // Product (Projection matrix * View matrix)
+        vimcube::math::Matrix4by4 vpMatrix = vimcube::math::getProduct4by4(projectionMatrix, viewMatrix);
+
+        // Cast worldPt to point4d
+        vimcube::geometry::Point4d castPoint4d = vimcube::math::castToPoint4d(worldPt);
+
+        vimcube::geometry::Point4d resultPoint4d = vimcube::math::getProduct4by4andPoint4d(vpMatrix, castPoint4d);
+
+        vimcube::geometry::Point3d resultPoint3d(0, 0, 0);
+        resultPoint3d.x = float(resultPoint4d.x / resultPoint4d.w);
+        resultPoint3d.y = float(resultPoint4d.y / resultPoint4d.w);
+        resultPoint3d.z = float(resultPoint4d.z / resultPoint4d.w);
+
+        // Convert to real canvas pixel coordinates
+        float pixelX = (resultPoint3d.x + 1) / 2 * canvasWidth;
+        float pixelY = (1 - resultPoint3d.y) / 2 * canvasHeight;
+
+        return vimcube::geometry::Point2d(pixelX, pixelY);
     }
 }    // namespace vimcube::camera

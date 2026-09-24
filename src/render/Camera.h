@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #include "../geometry/GeoTypes.h"
+#include "../utility/Math.h"
 
 namespace vimcube::camera {
 
@@ -8,6 +9,10 @@ namespace vimcube::camera {
 
     class Camera {
     private:
+
+        // Define special constants
+        static constexpr float EPSILON = 0.01f;
+        static constexpr float PI = 3.141592;
 
         // Projection Mode
         vimcube::camera::ProjectionMode projectionMode_ = vimcube::camera::ProjectionMode::ISOMETRIC;
@@ -28,13 +33,9 @@ namespace vimcube::camera {
         float zoomMax_ = 100.f;
 
         // For Perspective Mode
-        float fieldOfView_ = 90.0f;
+        float fieldOfView_ = PI / 2;
         float nearClip_ = 0.1f;
         float farClip_ = 100.0f;
-    
-        // Define special constants
-        static constexpr float EPSILON = 0.01f;
-        static constexpr float PI = 3.141592;
 
     public:
         // Constructor
@@ -49,6 +50,9 @@ namespace vimcube::camera {
         const vimcube::geometry::Vector3d& getCamPosition() const;
         const vimcube::geometry::Vector3d& getTarget() const;
         float getZoom() const;  // Only for Isometric mode
+        float getFieldOfView() const;
+        float getNearClip() const;
+        float getFarClip() const;
 
         // Methods
         // angle parameters are always Radian
@@ -63,7 +67,7 @@ namespace vimcube::camera {
         void zoomOut(float amount);
 
         // Projection
-        void projectToCanvas(const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight);
+        vimcube::geometry::Point2d projectToCanvas(const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight);
 
         // Reset
         void resetCamera();

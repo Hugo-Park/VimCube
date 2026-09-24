@@ -1,4 +1,3 @@
-#include <iostream>
 #include "KeyBinding.h"
 
 namespace vimcube::interface {
@@ -56,14 +55,10 @@ namespace vimcube::interface {
             return true;
         }
 
-        // if deque size is over 4 (if any string matches with keybindings)
-        if (Dq.size() >= 4)
+        // if deque size is over 3 (if any string matches with keybindings)
+        if (Dq.size() >= 3)
         {
             Dq.clear();
-            Dq.push_back(event.character()[0]);
-            keyBuffer.clear();
-            std::string str(Dq.begin(), Dq.end());  // make string with char in deque
-            keyBuffer = str;
         }
 
         return false;
@@ -89,5 +84,13 @@ namespace vimcube::interface {
     void KeyBinding::setPreDefinedKeyBinding(VimCubeApp& vimCube, std::vector<std::string>& commandHistory)
     {
         this->insertKeyToMap("qq", [&]() { commandHistory.clear(); vimCube.setActiveTab(0); });
+
+        this->insertKeyToMap("h", [&]() { vimCube.getCamera().orbitLeft(0.2f); });
+        this->insertKeyToMap("l", [&]() { vimCube.getCamera().orbitRight(0.2f); });
+        this->insertKeyToMap("j", [&]() { vimCube.getCamera().orbitDown(0.2f); });
+        this->insertKeyToMap("k", [&]() { vimCube.getCamera().orbitUp(0.2f); });
+
+        this->insertKeyToMap("a", [&]() { vimCube.getCamera().zoomIn(0.01f); });
+        this->insertKeyToMap("s", [&]() { vimCube.getCamera().zoomOut(0.01f); });
     }
 }

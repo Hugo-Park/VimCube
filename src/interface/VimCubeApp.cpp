@@ -13,6 +13,17 @@ namespace vimcube::interface {
     VimCubeApp::VimCubeApp() {};
 
     /*
+        Function Name : getCamera
+        Parameters : void
+        Return Type : vimcube::camera::Camera&
+        Description : Return mainCamera object (call-by-reference)
+    */
+    vimcube::camera::Camera& VimCubeApp::getCamera()
+    {
+        return this->mainCamera;
+    }
+
+    /*
         Function Name : setActiveTab
         Parameters : int tabNum
         Return Type : -
@@ -168,8 +179,8 @@ namespace vimcube::interface {
             
             for (auto& obj : this->sceneGeos)
             {
-                std::visit([&c] (auto& item) {
-                    vimcube::geo_draw::draw(item, c);   // Draw Geometry
+                std::visit([&c, this] (auto& item) {
+                    vimcube::geo_draw::draw(this->mainCamera, item, c);   // Draw Geometry
                 }, obj);
             }
 

@@ -1,4 +1,5 @@
 #include "GeoDraw.h"
+#include "Camera.h"
 
 namespace vimcube::geo_draw {
     /*
@@ -7,11 +8,8 @@ namespace vimcube::geo_draw {
         Return Type : void
         Description : Draw a Mesh object
     */
-    void draw(const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas)
+    void draw(vimcube::camera::Camera& camera, const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas)
     {
-        // Set canvas center point
-        float centerX = canvas.width() / 2.0f;
-        float centerY = canvas.height()/ 2.0f;
 
         for (const auto& edge : mesh.getEdges())
         {
@@ -19,20 +17,13 @@ namespace vimcube::geo_draw {
             auto pt1 = mesh.getVertices()[edge.v0].position;
             auto pt2 = mesh.getVertices()[edge.v1].position;
 
-            /*
-            int screenX1 = static_cast<int>(pt1.x + centerX);
-            int screenY1 = static_cast<int>(pt1.y + centerY);
-            int screenX2 = static_cast<int>(pt2.x + centerX);
-            int screenY2 = static_cast<int>(pt2.y + centerY);
-            */
-            
-            // Convert to 2D points --> MVP method later
-            float scale = 1.0f;
-            int screenX1 = static_cast<int>((pt1.x + pt1.z * 0.5f) * scale + centerX);
-            int screenY1 = static_cast<int>((pt1.y + pt1.z * 0.5f) * scale + centerY);
-            int screenX2 = static_cast<int>((pt2.x + pt2.z * 0.5f) * scale + centerX);
-            int screenY2 = static_cast<int>((pt2.y + pt2.z * 0.5f) * scale + centerY);
-            
+            vimcube::geometry::Point2d point1 = camera.projectToCanvas(pt1, canvas.width(), canvas.height());
+            vimcube::geometry::Point2d point2 = camera.projectToCanvas(pt2, canvas.width(), canvas.height());
+
+            int screenX1 = static_cast<int>(point1.x);
+            int screenY1 = static_cast<int>(point1.y);
+            int screenX2 = static_cast<int>(point2.x);
+            int screenY2 = static_cast<int>(point2.y);
             canvas.DrawPointLine(screenX1, screenY1, screenX2, screenY2, ftxui::Color::White);
         }
 

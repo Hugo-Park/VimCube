@@ -3,6 +3,12 @@
 namespace vimcube::camera
 {
 
+    // Constructor
+    Camera::Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up) : projectionMode_(projectionMode), target_(target), up_(up)
+    {
+        resetCamera();
+    }
+
     // Setter
     void Camera::setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode)
     {
@@ -61,7 +67,7 @@ namespace vimcube::camera
         // Convert spherical coordinates to cartesian coordinates
         float tempX = this->radius_ * sin(this->elevation_) * cos(this->azimuth_);
         float tempY = this->radius_ * sin(this->elevation_) * sin(this->azimuth_);
-        float tempZ = this->radius_ * cos(this->elevation_);
+        float tempZ = this->radius_ * cos(this->elevation_);    // Z axis is set as a pole
 
         // Update Camera position using target position
         this->camPosition_.x = this->target_.x + tempX;
@@ -110,7 +116,7 @@ namespace vimcube::camera
     */
     void Camera::orbitLeft(float angle)
     {
-        this->azimuth_ += angle;
+        this->azimuth_ -= angle;
         this->azimuth_ = std::fmod(this->azimuth_, 2 * PI);
         if (this->azimuth_ < 0)
         {
@@ -127,7 +133,7 @@ namespace vimcube::camera
     */
     void Camera::orbitRight(float angle)
     {
-        this->azimuth_ -= angle;
+        this->azimuth_ += angle;
         this->azimuth_ = std::fmod(this->azimuth_, 2 * PI);
         if (this->azimuth_ < 0)
         {
@@ -152,6 +158,7 @@ namespace vimcube::camera
             {
                 this->zoom_ = this->zoomMax_;
             }
+            updateCameraPosition();
         }
 
         // for PERSPECTIVE
@@ -182,6 +189,7 @@ namespace vimcube::camera
             {
                 this->zoom_ = this->zoomMin_;
             }
+            updateCameraPosition();
         }
 
         // for PERSPECTIVE
@@ -196,6 +204,12 @@ namespace vimcube::camera
         }
     }
 
+    /*
+        Function Name : projectToCanvas
+        Parameters : const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight
+        Return Type : vimcube::geometry::Point2d
+        Description : Convert coordinates to 2D canvas pixels
+    */
     vimcube::geometry::Point2d Camera::projectToCanvas(const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight)
     {
         float aspect = canvasWidth / canvasHeight;
@@ -230,5 +244,19 @@ namespace vimcube::camera
         float pixelY = (1 - resultPoint3d.y) / 2 * canvasHeight;
 
         return vimcube::geometry::Point2d(pixelX, pixelY);
+    }
+
+    /*
+        Function Name : resetCamera
+        Parameters : -
+        Return Type : void
+        Description : Reset Camera object by initial values
+    */
+    void Camera::resetCamera()
+    {
+        this->azimuth_ = INIT_AZIMUTH;
+        this->elevation_ = INIT_ELEVATION;
+        this->radius_ = INIT_RADIUS;
+        updateCameraPosition();
     }
 }    // namespace vimcube::camera

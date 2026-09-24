@@ -13,6 +13,9 @@ namespace vimcube::camera {
         // Define special constants
         static constexpr float EPSILON = 0.01f;
         static constexpr float PI = 3.141592;
+        static constexpr float INIT_AZIMUTH = PI / 4.0f;
+        static constexpr float INIT_ELEVATION = 0.9553;
+        static constexpr float INIT_RADIUS = 20.0f;
 
         // Projection Mode
         vimcube::camera::ProjectionMode projectionMode_ = vimcube::camera::ProjectionMode::ISOMETRIC;
@@ -24,13 +27,13 @@ namespace vimcube::camera {
 
         // For Orbit Rotating
         float azimuth_ = 0.0f;
-        float elevation_ = 0.0f;
+        float elevation_ = PI / 4.0f;
         float radius_ = 20.0f;
 
         // For Isometric Mode
-        float zoom_ = 10.0f;
-        float zoomMin_ = 0.1f;
-        float zoomMax_ = 100.f;
+        float zoom_ = 0.1f;
+        float zoomMin_ = 0.01f;
+        float zoomMax_ = 1000.0f;
 
         // For Perspective Mode
         float fieldOfView_ = PI / 2;
@@ -39,7 +42,7 @@ namespace vimcube::camera {
 
     public:
         // Constructor
-        Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& camPosition, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up) : projectionMode_(projectionMode), camPosition_(camPosition), target_(target), up_(up) {};
+        Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up);
 
         // Setter
         void setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode);

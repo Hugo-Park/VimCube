@@ -20,13 +20,13 @@ namespace vimcube::interface {
 
         vimcube::camera::Camera mainCamera{
             vimcube::camera::ProjectionMode::ISOMETRIC,
-            { 0.0f, 0.0f, -10.0f },
             { 0.0f, 0.0f, 0.0f },
-            { 0.0f, 1.0f, 0.0f }
+            { 0.0f, 0.0f, 1.0f }
         }; // This Camera object will exist until the program ends
 
-       public:
+    public:
         VimCubeApp();
+        vimcube::camera::Camera& getCamera();
         void setActiveTab(int tabNum);
         ftxui::Component createTitleScreen(ftxui::ScreenInteractive& screen);
         ftxui::Component createWorkSpace(ftxui::ScreenInteractive& screen);

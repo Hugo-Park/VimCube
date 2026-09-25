@@ -1,7 +1,7 @@
-#include <iostream>
 #include "VimCubeApp.h"
-#include "InputCommands.h"
-#include "KeyBinding.h"
+#include <ftxui/dom/elements.hpp>
+#include "../interface/InputCommands.h"
+#include "../interface/KeyBinding.h"
 
 namespace vimcube::interface {
     /*
@@ -184,7 +184,28 @@ namespace vimcube::interface {
                 }, obj);
             }
 
-            return canvas(std::move(c)) | center | border;
+            // Canvas for axis screen
+            auto x = ftxui::Canvas(terminalSize.dimx * 0.15, terminalSize.dimx * 0.15);
+
+            // Set Camera for axis indicator
+            vimcube::camera::Camera axisCamera(vimcube::camera::ProjectionMode::ISOMETRIC, {0, 0, 0}, this->mainCamera.getUp(), this->mainCamera.getAzimuth(), this->mainCamera.getElevation(), 5.0f );
+            vimcube::geometry::Mesh axisMesh = vimcube::geo_factory::createAxisIndicator(8);
+            geo_draw::draw(axisCamera, axisMesh, x);    // Draw axis indicator
+
+            auto leftOffset = emptyElement() | size(WIDTH, EQUAL, 1);
+            auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);
+
+            return dbox({ canvas(std::move(c)) | center | border, 
+                    vbox({ filler(), 
+                            hbox({ leftOffset,
+                            canvas(std::move(x)) 
+                            | size(WIDTH, EQUAL, terminalSize.dimx * 0.15 / 2) 
+                            | size(HEIGHT, EQUAL, terminalSize.dimx * 0.15 / 4) 
+                            | borderDashed }),
+                            bottomOffset
+                        })
+                    });
+            // return canvas(std::move(c)) | center | border;
         });
 
         // Render all layouts

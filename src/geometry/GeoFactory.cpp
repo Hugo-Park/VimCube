@@ -61,4 +61,31 @@ namespace vimcube::geo_factory {
 
         return vimcube::geometry::Mesh(vertices, edges);
     }
+
+    vimcube::geometry::Mesh createAxisIndicator(float length)
+    {
+        std::vector<vimcube::geometry::Vertex> vertices;
+
+        vimcube::geometry::Point3d pt0(0, 0, 0);
+        vimcube::geometry::Point3d pt1(length, 0, 0);
+        vimcube::geometry::Point3d pt2(0, length, 0);
+        vimcube::geometry::Point3d pt3(0, 0, length);
+
+        vertices.push_back(vimcube::geometry::Vertex(pt0));
+        vertices.push_back(vimcube::geometry::Vertex(pt1));
+        vertices.push_back(vimcube::geometry::Vertex(pt2));
+        vertices.push_back(vimcube::geometry::Vertex(pt3));
+
+        std::vector<vimcube::geometry::Edge> edges;
+
+        vimcube::geometry::Edge e0(vimcube::geometry::Edge(0, 1));
+        vimcube::geometry::Edge e1(vimcube::geometry::Edge(0, 2));
+        vimcube::geometry::Edge e2(vimcube::geometry::Edge(0, 3));
+
+        edges.push_back(e0);
+        edges.push_back(e1);
+        edges.push_back(e2);
+
+        return vimcube::geometry::Mesh(vertices, edges);
+    }
 }

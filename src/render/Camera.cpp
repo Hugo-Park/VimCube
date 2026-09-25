@@ -9,6 +9,11 @@ namespace vimcube::camera
         resetCamera();
     }
 
+    Camera::Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up, float azimuth, float elevation, float radius) : projectionMode_(projectionMode), target_(target), up_(up), azimuth_(azimuth), elevation_(elevation), radius_(radius)
+    {
+        updateCameraPosition();
+    }
+
     // Setter
     void Camera::setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode)
     {
@@ -34,6 +39,26 @@ namespace vimcube::camera
     const vimcube::geometry::Vector3d& Camera::getTarget() const
     {
         return this->target_;
+    }
+
+    const vimcube::geometry::Vector3d& Camera::getUp() const
+    {
+        return this->up_;
+    }
+
+    float Camera::getAzimuth() const
+    {
+        return this->azimuth_;
+    }
+
+    float Camera::getElevation() const
+    {
+        return this->elevation_;
+    }
+
+    float Camera::getRadius() const
+    {
+        return this->radius_;
     }
 
     float Camera::getZoom() const

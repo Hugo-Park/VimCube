@@ -7,6 +7,7 @@
 #include <ftxui/screen/screen.hpp>
 #include <ftxui/dom/canvas.hpp>
 #include <ftxui/screen/terminal.hpp>
+#include "../geometry/GeoFactory.h"
 #include "../render/GeoDraw.h"
 #include "../render/Camera.h"
 
@@ -16,6 +17,7 @@ namespace vimcube::interface {
     using Geometry = std::variant<vimcube::geometry::Mesh>;
     private:
         int activeTab = 0;
+        Geometry axisIndicator;
         std::vector<Geometry> sceneGeos;
 
         vimcube::camera::Camera mainCamera{

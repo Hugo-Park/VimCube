@@ -9,5 +9,6 @@
 */
 namespace vimcube::geo_factory {
     vimcube::geometry::Mesh createCube(float size);
+    vimcube::geometry::Mesh createAxisIndicator(float length);
 }
 #endif

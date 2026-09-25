@@ -44,6 +44,7 @@ namespace vimcube::camera {
         // Constructor
         Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up);
 
+        Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up, float azimuth, float elevation, float radius);
         // Setter
         void setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode);
         void setTarget(const vimcube::geometry::Vector3d& target);
@@ -52,6 +53,10 @@ namespace vimcube::camera {
         const vimcube::camera::ProjectionMode& getProjectionMode() const;
         const vimcube::geometry::Vector3d& getCamPosition() const;
         const vimcube::geometry::Vector3d& getTarget() const;
+        const vimcube::geometry::Vector3d& getUp() const;
+        float getAzimuth() const;
+        float getElevation() const;
+        float getRadius() const;
         float getZoom() const;  // Only for Isometric mode
         float getFieldOfView() const;
         float getNearClip() const;

@@ -85,12 +85,20 @@ namespace vimcube::interface {
     {
         this->insertKeyToMap("qq", [&]() { commandHistory.clear(); vimCube.setActiveTab(0); });
 
-        this->insertKeyToMap("h", [&]() { vimCube.getCamera().orbitLeft(0.2f); });
-        this->insertKeyToMap("l", [&]() { vimCube.getCamera().orbitRight(0.2f); });
-        this->insertKeyToMap("j", [&]() { vimCube.getCamera().orbitDown(0.2f); });
-        this->insertKeyToMap("k", [&]() { vimCube.getCamera().orbitUp(0.2f); });
+        this->insertKeyToMap("H", [&]() { vimCube.getCamera().orbitLeft(0.2f); });
+        this->insertKeyToMap("L", [&]() { vimCube.getCamera().orbitRight(0.2f); });
+        this->insertKeyToMap("J", [&]() { vimCube.getCamera().orbitDown(0.2f); });
+        this->insertKeyToMap("K", [&]() { vimCube.getCamera().orbitUp(0.2f); });
 
-        this->insertKeyToMap("a", [&]() { vimCube.getCamera().zoomIn(0.01f); });
-        this->insertKeyToMap("s", [&]() { vimCube.getCamera().zoomOut(0.01f); });
+        this->insertKeyToMap("h", [&]() { vimCube.getCamera().orbitLeft(0.1f); });
+        this->insertKeyToMap("l", [&]() { vimCube.getCamera().orbitRight(0.1f); });
+        this->insertKeyToMap("j", [&]() { vimCube.getCamera().orbitDown(0.1f); });
+        this->insertKeyToMap("k", [&]() { vimCube.getCamera().orbitUp(0.1f); });
+
+        this->insertKeyToMap("A", [&]() { vimCube.getCamera().zoomIn(0.01f); });
+        this->insertKeyToMap("S", [&]() { vimCube.getCamera().zoomOut(0.01f); });
+
+        this->insertKeyToMap("a", [&]() { vimCube.getCamera().zoomIn(0.005f); });
+        this->insertKeyToMap("s", [&]() { vimCube.getCamera().zoomOut(0.005f); });
     }
 }

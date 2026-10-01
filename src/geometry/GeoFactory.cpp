@@ -1,5 +1,7 @@
 #include "GeoFactory.h"
 #include <vector>
+#include "GeoTypes.h"
+#include "Mesh.h"
 
 namespace vimcube::geo_factory {
     /*
@@ -9,6 +11,62 @@ namespace vimcube::geo_factory {
         Description : Create a Mesh object
     */
     vimcube::geometry::Mesh createCube(float size)
+    {
+        float half = size / 2.0f;
+        std::vector<vimcube::geometry::Face> faces;
+        std::vector<vimcube::geometry::Vertex> vertices;
+        std::vector<vimcube::geometry::Edge> edges;
+        
+        vimcube::geometry::Point3d pt0(half, half, half);
+        vimcube::geometry::Point3d pt1(half, -half, half);
+        vimcube::geometry::Point3d pt2(half, -half, -half);
+        vimcube::geometry::Point3d pt3(half, half, -half);
+        vimcube::geometry::Point3d pt4(-half, half, half);
+        vimcube::geometry::Point3d pt5(-half, -half, half);
+        vimcube::geometry::Point3d pt6(-half, -half, -half);
+        vimcube::geometry::Point3d pt7(-half, half, -half);
+
+        vertices.push_back(vimcube::geometry::Vertex(pt0)); // 0
+        vertices.push_back(vimcube::geometry::Vertex(pt1)); // 1
+        vertices.push_back(vimcube::geometry::Vertex(pt2)); // 2
+        vertices.push_back(vimcube::geometry::Vertex(pt3)); // 3
+        vertices.push_back(vimcube::geometry::Vertex(pt4)); // 4
+        vertices.push_back(vimcube::geometry::Vertex(pt5)); // 5
+        vertices.push_back(vimcube::geometry::Vertex(pt6)); // 6
+        vertices.push_back(vimcube::geometry::Vertex(pt7)); // 7
+
+        vimcube::geometry::Face f0(0, 1, 2);
+        vimcube::geometry::Face f1(0, 2, 3);
+        vimcube::geometry::Face f2(4, 0, 3);
+        vimcube::geometry::Face f3(4, 3, 7);
+        vimcube::geometry::Face f4(5, 4, 7);
+        vimcube::geometry::Face f5(5, 7, 6);
+        vimcube::geometry::Face f6(1, 5, 6);
+        vimcube::geometry::Face f7(1, 6, 2);
+        vimcube::geometry::Face f8(0, 4 ,5);
+        vimcube::geometry::Face f9(0, 5, 1);
+        vimcube::geometry::Face f10(3, 2, 6);
+        vimcube::geometry::Face f11(3, 6, 7);
+
+        faces.push_back(f0);
+        faces.push_back(f1);
+        faces.push_back(f2);
+        faces.push_back(f3);
+        faces.push_back(f4);
+        faces.push_back(f5);
+        faces.push_back(f6);
+        faces.push_back(f7);
+        faces.push_back(f8);
+        faces.push_back(f9);
+        faces.push_back(f10);
+        faces.push_back(f11);
+
+        vimcube::geometry::Mesh cubeMesh(faces, vertices, edges);
+        cubeMesh.setEdgesByFaces();
+        return cubeMesh;
+    }
+
+    vimcube::geometry::Mesh createCubeOld(float size)
     {
         float half = size / 2.0f;
         std::vector<vimcube::geometry::Vertex> vertices;

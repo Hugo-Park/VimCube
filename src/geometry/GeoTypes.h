@@ -160,6 +160,9 @@ namespace vimcube::geometry {
         uint32_t v0;    // Vertex index
         uint32_t v1;
         uint32_t v2;
+
+        Face() = default;
+        Face(uint32_t v0, uint32_t v1, uint32_t v2) : v0(v0), v1(v1), v2(v2) {};
     };
 }
 #endif

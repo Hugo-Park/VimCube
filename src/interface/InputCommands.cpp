@@ -1,6 +1,6 @@
-#include <iostream>
 #include "InputCommands.h"
 #include "../geometry/GeoFactory.h"
+#include <vector>
 
 namespace vimcube::interface {
     /*
@@ -71,6 +71,7 @@ namespace vimcube::interface {
     {
         this->insertItemToMap("q", [&](const std::vector<std::string>& args) { commandHistory.clear(); vimCube.setActiveTab(0); });
         this->insertItemToMap("clear", [&](const std::vector<std::string>& args) { commandHistory.clear(); });
+
         this->insertItemToMap("cube", [&](const std::vector<std::string>& args) {
             float size = 10.0f;
 
@@ -84,9 +85,29 @@ namespace vimcube::interface {
                 }
             }
 
-            vimcube::geometry::Mesh resultMesh = vimcube::geo_factory::createCube(size);
+            vimcube::geometry::Mesh returnMesh = vimcube::geo_factory::createCube(size);
+            vimCube.addGeoToScene(returnMesh);
+        });
 
-            vimCube.addGeoToScene(resultMesh);
+        this->insertItemToMap("sphere", [&](const std::vector<std::string>& args) {
+            float radius = 10.0f;
+            int rings = 10;
+            int segments = 10;
+
+            if (!args.empty()){
+                try {
+                    radius = std::stof(args[0]);
+                    rings = std::stof(args[1]);
+                    segments = std::stof(args[2]);
+                }
+
+                catch (const std::invalid_argument& e) {
+                    return;
+                }
+            }
+
+            vimcube::geometry::Mesh returnMesh = vimcube::geo_factory::createSphere(radius, rings, segments);
+            vimCube.addGeoToScene(returnMesh);
         });
     }
 }

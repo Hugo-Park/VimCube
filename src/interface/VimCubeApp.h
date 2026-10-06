@@ -10,6 +10,7 @@
 #include "../geometry/GeoFactory.h"
 #include "../render/GeoDraw.h"
 #include "../render/Camera.h"
+#include "../utility/Math.h"
 
 namespace vimcube::interface {
     class VimCubeApp

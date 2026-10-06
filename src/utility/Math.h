@@ -21,6 +21,9 @@ namespace vimcube::math {
     void initMatrix3by3(Matrix3by3& m);
     void initMatrix4by4(Matrix4by4& m);
 
+    void constructIdentityMatrix3by3(Matrix3by3& m);
+    void constructIdentityMatrix4by4(Matrix4by4& m);
+
     Matrix3by3 constructMatrix3by3(const float(&entries)[3][3]);
     Matrix4by4 constructMatrix4by4(const float(&entries)[4][4]);
 
@@ -54,5 +57,8 @@ namespace vimcube::math {
     Matrix4by4 buildOrthogonalMatrix(float zoom, float aspect, float nearClip, float farClip);
     Matrix4by4 buildPerspectiveMatrix(float fieldOfView, float aspect, float nearClip, float farClip);
     Matrix4by4 buildViewMatrix(vimcube::geometry::Vector3d& eye, vimcube::geometry::Vector3d& target, vimcube::geometry::Vector3d& up);
+    Matrix4by4 buildMoveMatrix(float tx, float ty, float tz);
+    Matrix4by4 buildScaleMatrix(float sx, float sy, float sz);
+    Matrix4by4 buildRotateMatrix(uint32_t axis, float theta);
 }
 #endif

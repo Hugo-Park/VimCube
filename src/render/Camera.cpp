@@ -231,11 +231,11 @@ namespace vimcube::camera
 
     /*
         Function Name : projectToCanvas
-        Parameters : const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight
+        Parameters : const vimcube::math::Matrix4by4& modelMatrix, const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight
         Return Type : vimcube::geometry::Point2d
-        Description : Convert coordinates to 2D canvas pixels
+        Description : Convert coordinates to 2D canvas pixels by MVP methods
     */
-    vimcube::geometry::Point2d Camera::projectToCanvas(const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight)
+    vimcube::geometry::Point2d Camera::projectToCanvas(const vimcube::math::Matrix4by4& modelMatrix, const vimcube::geometry::Point3d& worldPt, float canvasWidth, float canvasHeight)
     {
         float aspect = canvasWidth / canvasHeight;
         vimcube::math::Matrix4by4 viewMatrix = vimcube::math::buildViewMatrix(this->camPosition_, this->target_, this->up_);
@@ -251,13 +251,14 @@ namespace vimcube::camera
             projectionMatrix = vimcube::math::buildPerspectiveMatrix(this->fieldOfView_, aspect, this->nearClip_, this->farClip_);
         }
 
-        // Product (Projection matrix * View matrix)
+        // Product (Projection matrix * View matrix * Model matrix)
         vimcube::math::Matrix4by4 vpMatrix = vimcube::math::getProduct4by4(projectionMatrix, viewMatrix);
+        vimcube::math::Matrix4by4 mvpMatrix = vimcube::math::getProduct4by4(vpMatrix, modelMatrix);
 
         // Cast worldPt to point4d
         vimcube::geometry::Point4d castPoint4d = vimcube::math::castToPoint4d(worldPt);
 
-        vimcube::geometry::Point4d resultPoint4d = vimcube::math::getProduct4by4andPoint4d(vpMatrix, castPoint4d);
+        vimcube::geometry::Point4d resultPoint4d = vimcube::math::getProduct4by4andPoint4d(mvpMatrix, castPoint4d);
 
         vimcube::geometry::Point3d resultPoint3d(0, 0, 0);
         resultPoint3d.x = float(resultPoint4d.x / resultPoint4d.w);

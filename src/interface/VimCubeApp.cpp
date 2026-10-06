@@ -177,10 +177,13 @@ namespace vimcube::interface {
 
             auto c = ftxui::Canvas(canvasWidth, canvasHeight);
             
+            // testM should be replaced after making SceneGeometry Class
+            vimcube::math::Matrix4by4 testM;
+            vimcube::math::constructIdentityMatrix4by4(testM);
             for (auto& obj : this->sceneGeos)
             {
-                std::visit([&c, this] (auto& item) {
-                    vimcube::geo_draw::draw(this->mainCamera, item, c);   // Draw Geometry
+                std::visit([&testM, &c, this] (auto& item) {
+                    vimcube::geo_draw::draw(testM, this->mainCamera, item, c);   // Draw Geometry
                 }, obj);
             }
 
@@ -190,7 +193,9 @@ namespace vimcube::interface {
             // Set Camera for axis indicator
             vimcube::camera::Camera axisCamera(vimcube::camera::ProjectionMode::ISOMETRIC, {0, 0, 0}, this->mainCamera.getUp(), this->mainCamera.getAzimuth(), this->mainCamera.getElevation(), 5.0f );
             vimcube::geometry::Mesh axisMesh = vimcube::geo_factory::createAxisIndicator(8);
-            geo_draw::draw(axisCamera, axisMesh, x);    // Draw axis indicator
+            vimcube::math::Matrix4by4 m;
+            vimcube::math::constructIdentityMatrix4by4(m);
+            vimcube::geo_draw::draw(m, axisCamera, axisMesh, x);    // Draw axis indicator
 
             auto leftOffset = emptyElement() | size(WIDTH, EQUAL, 1);
             auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);

@@ -10,6 +10,6 @@
     Description : geo_draw nammespace's methods only draw Geometry types(Point, Line, Mesh...).
 */
 namespace vimcube::geo_draw {
-    void draw(vimcube::camera::Camera& camera, const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas);
+    void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas);
 }
 #endif

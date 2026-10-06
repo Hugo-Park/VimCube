@@ -1,4 +1,5 @@
 #include "Math.h"
+#include <cmath>
 
 namespace vimcube::math {
     
@@ -17,7 +18,7 @@ namespace vimcube::math {
 
     /*
         Function Name : initMatrix4by4
-        Parameters : Matri4by4& m
+        Parameters : Matrix4by4& m
         Return Type : void
         Description : Initializes Matrix4by4
     */
@@ -28,6 +29,34 @@ namespace vimcube::math {
                 m.entries[i][j] = 0;
     }
 
+    /*
+        Function Name : constructIdentityMatrix3by3
+        Parameters : Matrix3by3& m
+        Return Type : void
+        Description : Constructs 3by3 identity matrix
+    */
+    void constructIdentityMatrix3by3(Matrix3by3& m)
+    {
+        initMatrix3by3(m);
+        m.entries[0][0] = 1;
+        m.entries[1][1] = 1;
+        m.entries[2][2] = 1;
+    }
+
+    /*
+        Function Name : constructIdentityMatrix4by4
+        Parameters : Matrix4by4& m
+        Return Type : void 
+        Description : Constructs 4by4 identity matrix
+    */
+    void constructIdentityMatrix4by4(Matrix4by4& m)
+    {
+        initMatrix4by4(m);
+        m.entries[0][0] = 1;
+        m.entries[1][1] = 1;
+        m.entries[2][2] = 1;
+        m.entries[3][3] = 1;
+    }
     /*
         Function Name : constructMatrix3by3
         Parameters : const float(&entries)[3][3]
@@ -392,5 +421,74 @@ namespace vimcube::math {
         viewMatrix.entries[3][3] = 1.0f;
 
         return viewMatrix;
+    }
+
+    /*
+        Function Name : buildMoveMatrix
+        Parameters : float tx, float ty, float tz
+        Return Type : Matrix4by4
+        Description : Build move matrix for MVP methods
+    */
+    Matrix4by4 buildMoveMatrix(float tx, float ty, float tz)
+    {
+        Matrix4by4 moveMatrix;
+        constructIdentityMatrix4by4(moveMatrix);
+        moveMatrix.entries[0][3] = tx;
+        moveMatrix.entries[1][3] = ty;
+        moveMatrix.entries[2][3] = tz;
+
+        return moveMatrix;
+    }
+
+    /*
+        Function Name : buildScaleMatrix
+        Parameters : float sx, float sy, float sz
+        Return Type : Matrix4by4
+        Description : Build scale matrix for MVP methods
+    */
+    Matrix4by4 buildScaleMatrix(float sx, float sy, float sz)
+    {
+        Matrix4by4 scaleMatrix;
+        constructIdentityMatrix4by4(scaleMatrix);
+        scaleMatrix.entries[0][0] = sx;
+        scaleMatrix.entries[1][1] = sy;
+        scaleMatrix.entries[2][2] = sz;
+
+        return scaleMatrix;
+    }
+
+    /*
+        Function Name : buildRotateMatrix
+        Parameters : uint32_t axis, float theta
+        Return Type : Matrix4by4
+        Description : Build rotate matrix for MVP methods
+    */
+    Matrix4by4 buildRotateMatrix(uint32_t axis, float theta)
+    {
+        Matrix4by4 rotateMatrix;
+        constructIdentityMatrix4by4(rotateMatrix);
+
+        if (axis == 0)  // x-axis
+        {
+            rotateMatrix.entries[1][1] = std::cos(theta);
+            rotateMatrix.entries[1][2] = -1 * std::sin(theta);
+            rotateMatrix.entries[2][1] = std::sin(theta);
+            rotateMatrix.entries[2][2] = std::cos(theta);
+        }
+        else if (axis == 1) // y-axis
+        {
+            rotateMatrix.entries[0][0] = std::cos(theta);
+            rotateMatrix.entries[0][2] = std::sin(theta);
+            rotateMatrix.entries[2][0] = -1 * std::sin(theta);
+            rotateMatrix.entries[2][2] = std::cos(theta);
+        }
+        else if (axis == 2)
+        {
+            rotateMatrix.entries[0][0] = std::cos(theta);
+            rotateMatrix.entries[0][1] = -1 * std::sin(theta);
+            rotateMatrix.entries[1][0] = std::sin(theta);
+            rotateMatrix.entries[1][1] = std::cos(theta);
+        }
+        return rotateMatrix;
     }
 }

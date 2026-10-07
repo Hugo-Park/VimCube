@@ -463,26 +463,26 @@ namespace vimcube::math {
         Return Type : Matrix4by4
         Description : Build rotate matrix for MVP methods
     */
-    Matrix4by4 buildRotateMatrix(uint32_t axis, float theta)
+    Matrix4by4 buildRotateMatrix(Axis axis, float theta)
     {
         Matrix4by4 rotateMatrix;
         constructIdentityMatrix4by4(rotateMatrix);
 
-        if (axis == 0)  // x-axis
+        if (axis == Axis::X)  // x-axis
         {
             rotateMatrix.entries[1][1] = std::cos(theta);
             rotateMatrix.entries[1][2] = -1 * std::sin(theta);
             rotateMatrix.entries[2][1] = std::sin(theta);
             rotateMatrix.entries[2][2] = std::cos(theta);
         }
-        else if (axis == 1) // y-axis
+        else if (axis == Axis::Y) // y-axis
         {
             rotateMatrix.entries[0][0] = std::cos(theta);
             rotateMatrix.entries[0][2] = std::sin(theta);
             rotateMatrix.entries[2][0] = -1 * std::sin(theta);
             rotateMatrix.entries[2][2] = std::cos(theta);
         }
-        else if (axis == 2)
+        else if (axis == Axis::Z)
         {
             rotateMatrix.entries[0][0] = std::cos(theta);
             rotateMatrix.entries[0][1] = -1 * std::sin(theta);

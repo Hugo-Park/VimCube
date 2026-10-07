@@ -54,11 +54,13 @@ namespace vimcube::math {
 
     /* Build Matrix for MVP Methods*/
 
+    enum class Axis {X, Y, Z};
+
     Matrix4by4 buildOrthogonalMatrix(float zoom, float aspect, float nearClip, float farClip);
     Matrix4by4 buildPerspectiveMatrix(float fieldOfView, float aspect, float nearClip, float farClip);
     Matrix4by4 buildViewMatrix(vimcube::geometry::Vector3d& eye, vimcube::geometry::Vector3d& target, vimcube::geometry::Vector3d& up);
     Matrix4by4 buildMoveMatrix(float tx, float ty, float tz);
     Matrix4by4 buildScaleMatrix(float sx, float sy, float sz);
-    Matrix4by4 buildRotateMatrix(uint32_t axis, float theta);
+    Matrix4by4 buildRotateMatrix(Axis axis, float theta);
 }
 #endif

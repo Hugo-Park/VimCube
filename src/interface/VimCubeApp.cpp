@@ -1,8 +1,10 @@
 #include "VimCubeApp.h"
+#include <sys/types.h>
 #include <cstdint>
 #include <algorithm>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
+#include <iterator>
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
 
@@ -326,6 +328,36 @@ namespace vimcube::interface {
                 obj.setIsSelected(false);
             }
         }
+        return true;
+    }
+
+    bool VimCubeApp::selectNextGeo()
+    {
+        if (this->sceneGeos.empty()) return false;
+        auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
+        if (it == sceneGeos.end())
+        {
+            selectGeo(sceneGeos.begin()->getId());
+            return true;
+        }
+        size_t idx = std::distance(sceneGeos.begin(), it);
+        size_t nextIdx = (idx + 1) % sceneGeos.size();
+        selectGeo(sceneGeos[nextIdx].getId());
+        return true;
+    }
+
+    bool VimCubeApp::selectPrevGeo()
+    {
+        if (this->sceneGeos.empty()) return false;
+        auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
+        if (it == sceneGeos.end())
+        {
+            selectGeo(sceneGeos.back().getId());
+            return true;
+        }
+        size_t idx = std::distance(sceneGeos.begin(), it);
+        size_t nextIdx = (idx + sceneGeos.size() - 1) % sceneGeos.size();
+        selectGeo(sceneGeos[nextIdx].getId());
         return true;
     }
 

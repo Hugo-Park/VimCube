@@ -103,6 +103,22 @@ namespace vimcube::interface {
             vimCube.deselectGeo(id);
         });
 
+        this->insertItemToMap("delete", [&](const std::vector<std::string>& args) { 
+
+            uint32_t id = 0;
+
+            if (!args.empty()) {
+                try {
+                    id = std::stoi(args[0]);
+                }
+
+                catch (const std::invalid_argument& e) {
+                    return;
+                }
+            }
+            vimCube.removeGeoFromScene(id);
+        });
+
         this->insertItemToMap("cube", [&](const std::vector<std::string>& args) {
             float size = 10.0f;
 

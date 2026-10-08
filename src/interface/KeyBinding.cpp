@@ -84,6 +84,8 @@ namespace vimcube::interface {
     void KeyBinding::setPreDefinedKeyBinding(VimCubeApp& vimCube, std::vector<std::string>& commandHistory)
     {
         this->insertKeyToMap("qq", [&]() { commandHistory.clear(); vimCube.setActiveTab(0); });
+        this->insertKeyToMap("n", [&]() { vimCube.selectNextGeo(); });
+        this->insertKeyToMap("N", [&]() { vimCube.selectPrevGeo(); });
 
         this->insertKeyToMap("H", [&]() { vimCube.getCamera().orbitLeft(0.2f); });
         this->insertKeyToMap("L", [&]() { vimCube.getCamera().orbitRight(0.2f); });

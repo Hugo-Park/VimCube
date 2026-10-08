@@ -8,7 +8,7 @@ namespace vimcube::geo_draw {
         Return Type : void
         Description : Draw a Mesh object
     */
-    void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas)
+    void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas, ftxui::Color color)
     {
 
         for (const auto& edge : mesh.getEdges())
@@ -24,7 +24,7 @@ namespace vimcube::geo_draw {
             int screenY1 = static_cast<int>(point1.y);
             int screenX2 = static_cast<int>(point2.x);
             int screenY2 = static_cast<int>(point2.y);
-            canvas.DrawPointLine(screenX1, screenY1, screenX2, screenY2, ftxui::Color::White);
+            canvas.DrawPointLine(screenX1, screenY1, screenX2, screenY2, color);
         }
 
     }

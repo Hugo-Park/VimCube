@@ -71,11 +71,42 @@ namespace vimcube::interface {
     {
         this->insertItemToMap("q", [&](const std::vector<std::string>& args) { commandHistory.clear(); vimCube.setActiveTab(0); });
         this->insertItemToMap("clear", [&](const std::vector<std::string>& args) { commandHistory.clear(); });
+        this->insertItemToMap("select", [&](const std::vector<std::string>& args) { 
+
+            uint32_t id = 0;
+
+            if (!args.empty()) {
+                try {
+                    id = std::stoi(args[0]);
+                }
+
+                catch (const std::invalid_argument& e) {
+                    return;
+                }
+            }
+            vimCube.selectGeo(id);
+        });
+
+        this->insertItemToMap("deselect", [&](const std::vector<std::string>& args) { 
+
+            uint32_t id = 0;
+
+            if (!args.empty()) {
+                try {
+                    id = std::stoi(args[0]);
+                }
+
+                catch (const std::invalid_argument& e) {
+                    return;
+                }
+            }
+            vimCube.deselectGeo(id);
+        });
 
         this->insertItemToMap("cube", [&](const std::vector<std::string>& args) {
             float size = 10.0f;
 
-            if (!args.empty()){
+            if (!args.empty()) {
                 try {
                     size = std::stof(args[0]);
                 }

@@ -1,5 +1,8 @@
 #include "VimCubeApp.h"
+#include <cstdint>
+#include <algorithm>
 #include <ftxui/dom/elements.hpp>
+#include <ftxui/screen/color.hpp>
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
 
@@ -177,14 +180,9 @@ namespace vimcube::interface {
 
             auto c = ftxui::Canvas(canvasWidth, canvasHeight);
             
-            // testM should be replaced after making SceneGeometry Class
-            vimcube::math::Matrix4by4 testM;
-            vimcube::math::constructIdentityMatrix4by4(testM);
             for (auto& obj : this->sceneGeos)
             {
-                std::visit([&testM, &c, this] (auto& item) {
-                    vimcube::geo_draw::draw(testM, this->mainCamera, item, c);   // Draw Geometry
-                }, obj);
+                vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color::Yellow : ftxui::Color::White);   // Draw Geometry
             }
 
             // Canvas for axis screen
@@ -195,7 +193,7 @@ namespace vimcube::interface {
             vimcube::geometry::Mesh axisMesh = vimcube::geo_factory::createAxisIndicator(8);
             vimcube::math::Matrix4by4 m;
             vimcube::math::constructIdentityMatrix4by4(m);
-            vimcube::geo_draw::draw(m, axisCamera, axisMesh, x);    // Draw axis indicator
+            vimcube::geo_draw::draw(m, axisCamera, axisMesh, x, ftxui::Color::White);    // Draw axis indicator
 
             auto leftOffset = emptyElement() | size(WIDTH, EQUAL, 1);
             auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);
@@ -287,11 +285,66 @@ namespace vimcube::interface {
     /*
         Function Name : addGeoToScene 
         Parameters : Geometry& geometry
-        Return Type : void
-        Description : Add Geometry for drawing.
+        Return Type : uint32_t
+        Description : Add Geometry for drawing
     */
-    void VimCubeApp::addGeoToScene(const Geometry& geometry)
+    uint32_t VimCubeApp::addGeoToScene(const vimcube::geometry::Mesh& mesh)
     {
-        sceneGeos.push_back(geometry);
+        uint32_t tempId = this->nextId;
+        sceneGeos.emplace_back(vimcube::geometry::SceneGeometry(this->nextId++, mesh));
+        return tempId;
+    }
+
+    void VimCubeApp::removeGeoFromScene(uint32_t id)
+    {
+        auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getId() == id; });
+        if (it == sceneGeos.end()) return;
+        sceneGeos.erase(it);
+    }
+
+    bool VimCubeApp::selectGeo(uint32_t id)
+    {
+        bool found = false;
+        for (auto& obj : sceneGeos)
+        {
+            if (obj.getId() == id)
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) return false;
+        for (auto& obj : sceneGeos)
+        {
+            if (obj.getId() == id)
+            {
+                obj.setIsSelected(true);
+            }
+            else
+            {
+                obj.setIsSelected(false);
+            }
+        }
+        return true;
+    }
+
+    void VimCubeApp::deselectGeo(uint32_t id)
+    {
+        for (auto& obj : sceneGeos)
+        {
+            if (obj.getId() == id)
+            {
+                obj.setIsSelected(false);
+            }
+        }
+    }
+
+    void VimCubeApp::clearSelectGeo()
+    {
+        for (auto& obj : sceneGeos)
+        {
+            obj.setIsSelected(false);
+        }
     }
 }

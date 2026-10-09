@@ -44,6 +44,7 @@ namespace vimcube::interface {
         bool selectPrevGeo();
         void deselectGeo(uint32_t id);
         void clearSelectGeo();
+        vimcube::geometry::SceneGeometry* getSelectedGeo();
     };
 }
 #endif

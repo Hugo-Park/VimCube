@@ -284,7 +284,7 @@ namespace vimcube::interface {
     
     /*
         Function Name : addGeoToScene 
-        Parameters : Geometry& geometry
+        Parameters : const vimcube::geometry::Mesh& mesh
         Return Type : uint32_t
         Description : Add SceneGeometry
     */
@@ -412,5 +412,21 @@ namespace vimcube::interface {
         {
             obj.setIsSelected(false);
         }
+    }
+
+    /*
+        Function Name : getSelectedGeo
+        Parameters : -
+        Return Type : vimcube::geometry::SceneGeometry*
+        Description : Get pointer of selected geometry. Use this method everytime before calling transform commands because returned pointer would be invalid after addGeoToScene().
+    */
+    vimcube::geometry::SceneGeometry* VimCubeApp::getSelectedGeo()
+    {
+        for (auto& obj : sceneGeos)
+        {
+            if (obj.getIsSelected())
+                return &obj;
+        }
+        return nullptr;
     }
 }

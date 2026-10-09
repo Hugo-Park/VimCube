@@ -23,6 +23,10 @@ namespace vimcube::geometry {
         void setPosition(float tx, float ty, float tz);
         void setScale(float sx, float sy, float sz);
         void setRotation(vimcube::math::Axis axis, float theta);
+
+        void translate(vimcube::math::Axis axis, float amount);
+        void scale(vimcube::math::Axis axis, float factor);
+        void rotate(vimcube::math::Axis axis, float theta);
     };
 }
 #endif

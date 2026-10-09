@@ -77,6 +77,7 @@ namespace vimcube::geometry {
     */
     void Transform::setScale(float sx, float sy, float sz)
     {
+        if (sx == 0.0f || sy == 0.0f || sz == 0.0f) return;
         this->scale_.x = sx;
         this->scale_.y = sy;
         this->scale_.z = sz;
@@ -101,6 +102,73 @@ namespace vimcube::geometry {
         else if (axis == vimcube::math::Axis::Z)
         {
             this->rotation_.z = theta;
+        }
+    }
+
+    /*
+        Function Name : translate
+        Parameters : vimcube::math::Axis axis, float amount
+        Return Type : void
+        Description : Accumulate position
+    */
+    void Transform::translate(vimcube::math::Axis axis, float amount)
+    {
+        if (axis == vimcube::math::Axis::X)
+        {
+            this->position_.x += amount;
+        }
+        else if (axis == vimcube::math::Axis::Y)
+        {
+            this->position_.y += amount;
+        }
+        else if (axis == vimcube::math::Axis::Z)
+        {
+            this->position_.z += amount;
+        }
+    }
+
+    /*
+        Function Name : scale
+        Parameters : vimcube::math::Axis axis, float factor
+        Return Type : void
+        Description : Accumulate scale factor
+    */
+    void Transform::scale(vimcube::math::Axis axis, float factor)
+    {
+        if (factor == 0.0f) return;
+        if (axis == vimcube::math::Axis::X)
+        {
+            this->scale_.x *= factor;
+        }
+        else if (axis == vimcube::math::Axis::Y)
+        {
+            this->scale_.y *= factor;
+        }
+        else if (axis == vimcube::math::Axis::Z)
+        {
+            this->scale_.z *= factor;
+        }
+    }
+
+    /*
+        Function Name : rotate
+        Parameters : vimcube::math::Axis axis, float theta
+        Return Type : void
+        Description : Accumulate rotation angle
+    */
+    void Transform::rotate(vimcube::math::Axis axis, float theta)
+    {
+        if (axis == vimcube::math::Axis::X)
+        {
+            this->rotation_.x += theta;
+        }
+        else if (axis == vimcube::math::Axis::Y)
+        {
+            this->rotation_.y += theta;
+        }
+        else if (axis == vimcube::math::Axis::Z)
+        {
+            this->rotation_.z += theta;
         }
     }
 }

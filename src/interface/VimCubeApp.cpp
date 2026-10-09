@@ -1,10 +1,8 @@
 #include "VimCubeApp.h"
-#include <sys/types.h>
 #include <cstdint>
 #include <algorithm>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
-#include <iterator>
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
 
@@ -288,7 +286,7 @@ namespace vimcube::interface {
         Function Name : addGeoToScene 
         Parameters : Geometry& geometry
         Return Type : uint32_t
-        Description : Add Geometry for drawing
+        Description : Add SceneGeometry
     */
     uint32_t VimCubeApp::addGeoToScene(const vimcube::geometry::Mesh& mesh)
     {
@@ -297,6 +295,12 @@ namespace vimcube::interface {
         return tempId;
     }
 
+    /*
+        Function Name : removeGeoFromScene
+        Parameters : uint32_t id
+        Return Type : void
+        Description : Remove SceneGeometry
+    */
     void VimCubeApp::removeGeoFromScene(uint32_t id)
     {
         auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getId() == id; });
@@ -304,6 +308,12 @@ namespace vimcube::interface {
         sceneGeos.erase(it);
     }
 
+    /*
+        Function Name : selectGeo
+        Parameters : uint32_t id
+        Return Type : bool
+        Description : Select geometry
+    */
     bool VimCubeApp::selectGeo(uint32_t id)
     {
         bool found = false;
@@ -331,6 +341,12 @@ namespace vimcube::interface {
         return true;
     }
 
+    /*
+        Function Name : selectNextGeo
+        Parameters : -
+        Return Type : bool
+        Description : Select next geometry
+    */
     bool VimCubeApp::selectNextGeo()
     {
         if (this->sceneGeos.empty()) return false;
@@ -346,6 +362,12 @@ namespace vimcube::interface {
         return true;
     }
 
+    /*
+        Function Name : selectPrevGeo
+        Parameters : -
+        Return Type : bool
+        Description : Select previous geometry
+    */
     bool VimCubeApp::selectPrevGeo()
     {
         if (this->sceneGeos.empty()) return false;
@@ -361,6 +383,12 @@ namespace vimcube::interface {
         return true;
     }
 
+    /*
+        Function Name : deselectGeo
+        Parameters : -
+        Return Type : void
+        Description : Deselect geometry
+    */
     void VimCubeApp::deselectGeo(uint32_t id)
     {
         for (auto& obj : sceneGeos)
@@ -372,6 +400,12 @@ namespace vimcube::interface {
         }
     }
 
+    /*
+        Function Name : clearSelectGeo
+        Parameters : -
+        Return Type : void
+        Description : Deselect all geometry
+    */
     void VimCubeApp::clearSelectGeo()
     {
         for (auto& obj : sceneGeos)

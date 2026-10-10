@@ -1,5 +1,6 @@
 #include "InputCommands.h"
 #include "../geometry/GeoFactory.h"
+#include <cstdint>
 #include <vector>
 
 namespace vimcube::interface {
@@ -138,8 +139,8 @@ namespace vimcube::interface {
 
         this->insertItemToMap("sphere", [&](const std::vector<std::string>& args) {
             float radius = 10.0f;
-            int rings = 10;
-            int segments = 10;
+            uint32_t rings = 10;
+            uint32_t segments = 10;
 
             if (!args.empty()){
                 try {

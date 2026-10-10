@@ -160,7 +160,7 @@ namespace vimcube::geo_factory {
         Return Type : vimcube::geometry::Mesh 
         Description : Create a mesh sphere
     */
-    vimcube::geometry::Mesh createSphere(float radius, int rings, int segments)
+    vimcube::geometry::Mesh createSphere(float radius, uint32_t rings, uint32_t segments)
     {
         std::vector<vimcube::geometry::Face> faces;
         std::vector<vimcube::geometry::Vertex> vertices;

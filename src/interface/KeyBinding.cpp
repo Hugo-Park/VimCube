@@ -1,4 +1,6 @@
 #include "KeyBinding.h"
+#include "../command/CommandParser.h"
+#include "CommandExecutor.h"
 
 namespace vimcube::interface {
     /*
@@ -84,6 +86,20 @@ namespace vimcube::interface {
     void KeyBinding::setPreDefinedKeyBinding(VimCubeApp& vimCube, std::vector<std::string>& commandHistory)
     {
         this->insertKeyToMap("qq", [&]() { commandHistory.clear(); vimCube.setActiveTab(0); });
+        this->insertKeyToMap("ee", [&]() { 
+            vimcube::command::ParseResult result = vimcube::command::parse("c30m20z");
+            if (!result.ok)
+            {
+                commandHistory.push_back(result.errorMsg);
+                return;
+            }
+            vimcube::command_executor::ExecuteResult exResult = vimcube::command_executor::execute(vimCube, result.commands);
+            if (!exResult.ok)
+            {
+                commandHistory.push_back(exResult.errorMsg);
+                return;
+            }
+        });
         this->insertKeyToMap("n", [&]() { vimCube.selectNextGeo(); });
         this->insertKeyToMap("N", [&]() { vimCube.selectPrevGeo(); });
 

@@ -1,5 +1,6 @@
 #include "CommandParser.h"
 #include "Command.h"
+#include <algorithm>
 #include <array>
 #include <cctype>
 #include <cstddef>
@@ -128,6 +129,48 @@ namespace vimcube::command {
             }
             return false;
         }
+
+        /* Define error types */
+        enum class ErrorType { UNKNOWN_VERB, NUMBER_EXPECTED, AXIS_EXPECTED };
+
+        /*
+            Function Name : makeError
+            Parameters : ParseResult& result, const std::string& input, ErrorType err, const std::string& errorMsg, size_t pos
+            Return Type : ParseResult
+            Description : Make an error object
+        */
+        ParseResult makeError(ParseResult& result, const std::string& input, ErrorType err, const std::string& errorMsg, size_t pos)
+        {
+            ParseResult returnResult(false, errorMsg, pos);
+            returnResult.partialCommands = std::move(result.commands);
+
+            // Check imcomplete
+            if (err == ErrorType::UNKNOWN_VERB)
+                returnResult.incomplete = false;
+            else if (err == ErrorType::NUMBER_EXPECTED)
+            {
+                bool isIncomplete = true;
+                for (size_t i = pos; i < input.size(); i++)
+                {
+                    if (input[i] != '+' && input[i] != '-' && input[i] != '.' && input[i] != ' ')
+                    {
+                        returnResult.incomplete = false;
+                        isIncomplete = false;
+                        break;
+                    }
+                }
+                if (isIncomplete)
+                    returnResult.incomplete = true;
+            }
+
+            else if (err == ErrorType::AXIS_EXPECTED)
+            {
+                if (pos == input.size())
+                    returnResult.incomplete = true;
+            }
+
+            return returnResult;
+        }
     }
 
     /*
@@ -146,7 +189,7 @@ namespace vimcube::command {
             const Verb* v = findVerb(input, pos);
             if (v == nullptr)
             {
-                return ParseResult(false, "unknown command", pos);
+                return makeError(result, input, ErrorType::UNKNOWN_VERB, "unknown verb", pos);
             }
 
             Command cmd;
@@ -157,13 +200,13 @@ namespace vimcube::command {
             if (v->needsValue)
             {
                 if(!readNumber(input, pos, cmd.value))
-                    return ParseResult(false, "number expected", pos);
+                    return makeError(result, input, ErrorType::NUMBER_EXPECTED, "number expected", pos);
             }
 
             if (v->needsAxis)
             {
                 if (!readAxis(input[pos], cmd.axis))
-                    return ParseResult(false, "axis(x/y/z) expected", pos);
+                    return makeError(result, input, ErrorType::AXIS_EXPECTED, "axis(x/y/z) expected", pos);
                 pos++;
             }
             result.commands.push_back(cmd);

@@ -429,4 +429,44 @@ namespace vimcube::interface {
         }
         return nullptr;
     }
+
+    /*
+        Function Name : saveSnapshot
+        Parameters : -
+        Return Type : void
+        Description : Save snapshot
+    */
+    void VimCubeApp::saveSnapshot()
+    {
+        this->savedSceneGeos = this->sceneGeos;
+        this->savedId = this->nextId;
+        this->hasSnapshot = true;
+    }
+
+    /*
+        Function Name : restoreSnapshot
+        Parameters : -
+        Return Type : void
+        Description : Restore snapshot
+    */
+    void VimCubeApp::restoreSnapshot()
+    {
+        if (hasSnapshot)
+        {
+            this->sceneGeos = this->savedSceneGeos;
+            this->nextId = this->savedId;
+        }
+    }
+
+    /*
+        Function Name : discardSnapshot
+        Parameters : -
+        Return Type : void
+        Description : Discard snapshot
+    */
+    void VimCubeApp::discardSnapshot()
+    {
+        this->hasSnapshot = false;
+        this->savedSceneGeos.clear();
+    }
 }

@@ -29,6 +29,11 @@ namespace vimcube::interface {
             { 0.0f, 0.0f, 1.0f }
         }; // This Camera object will exist until the program ends
 
+        // For snapshot features
+        std::vector<vimcube::geometry::SceneGeometry> savedSceneGeos;
+        uint32_t savedId = 0;
+        bool hasSnapshot = false;
+
     public:
         VimCubeApp();
         vimcube::camera::Camera& getCamera();
@@ -45,6 +50,10 @@ namespace vimcube::interface {
         void deselectGeo(uint32_t id);
         void clearSelectGeo();
         vimcube::geometry::SceneGeometry* getSelectedGeo();
+
+        void saveSnapshot();
+        void restoreSnapshot();
+        void discardSnapshot();
     };
 }
 #endif

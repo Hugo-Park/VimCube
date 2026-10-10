@@ -12,9 +12,11 @@ namespace vimcube::command {
         std::vector<vimcube::command::Command> commands;    // Parsed commands
         std::string errorMsg;                               // Error message
         size_t errorPos = 0;                                // Position of error string
+        std::vector<vimcube::command::Command> partialCommands;
+        bool incomplete = false;
 
         ParseResult() = default;
-        ParseResult(bool ok, std::vector<vimcube::command::Command> cmds, std::string erMsg, size_t erPos) : ok(ok), commands(cmds), errorMsg(erMsg), errorPos(erPos) {}
+        ParseResult(bool ok, std::vector<vimcube::command::Command> cmds, std::string errMsg, size_t errPos) : ok(ok), commands(cmds), errorMsg(errMsg), errorPos(errPos) {}
         ParseResult(bool ok, std::string erMsg, size_t erPos) : ok(ok), errorMsg(erMsg), errorPos(erPos) {} // Constructor for an error object
     };
 

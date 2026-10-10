@@ -5,6 +5,12 @@
 
 namespace vimcube::interface {
 
+    /*
+        Function Name : runSequence
+        Parameters : VimCubeApp& app, const std::string& input
+        Return Type : RunnerResult
+        Description : Make RunnerResult object by using error messages and error positions
+    */
     RunnerResult runSequence(VimCubeApp& app, const std::string& input)
     {
         vimcube::command::ParseResult parseResult = vimcube::command::parse(input);

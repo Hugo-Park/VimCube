@@ -10,6 +10,12 @@ namespace vimcube::command_executor {
         static constexpr uint32_t RINGS = 10;
         static constexpr uint32_t SEGMENTS = 10;
 
+        /*
+            Function Name : check
+            Parameters : interface::VimCubeApp& app, const std::vector<vimcube::command::Command>& cmd
+            Return Type : ExecuteResult
+            Description : Check pre-conditions of all commands
+        */
         ExecuteResult check(interface::VimCubeApp& app, const std::vector<vimcube::command::Command>& cmd)
         {
             bool hasSelection = app.getSelectedGeo() != nullptr;
@@ -91,6 +97,12 @@ namespace vimcube::command_executor {
         }
     }
 
+    /*
+        Function Name : execute
+        Parameters : interface::VimCubeApp& app, const std::vector<vimcube::command::Command>& cmd
+        Return Type : ExecuteResult
+        Description : Excute commands
+    */
     ExecuteResult execute(interface::VimCubeApp& app, const std::vector<vimcube::command::Command>& cmd)
     {
         ExecuteResult result = check(app, cmd);

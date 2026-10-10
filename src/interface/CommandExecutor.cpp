@@ -20,6 +20,10 @@ namespace vimcube::command_executor {
                 switch (c.op)
                 {
                 case (command::Op::CreateCube):
+                    if (hasSelection)
+                    {
+                        return ExecuteResult(false, "cannot create geometry while an object is selected", i);
+                    }
                     if (c.value <= 0)
                     {
                         return ExecuteResult(false, "size must be positive value", i);
@@ -28,6 +32,10 @@ namespace vimcube::command_executor {
                     break;
 
                 case (command::Op::CreateSphere):
+                    if (hasSelection)
+                    {
+                        return ExecuteResult(false, "cannot create geometry while an object is selected", i);
+                    }
                     if (c.value <= 0)
                     {
                         return ExecuteResult(false, "radius must be positive value", i);

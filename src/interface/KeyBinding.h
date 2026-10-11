@@ -4,6 +4,7 @@
 #include <string>
 #include <functional>
 #include <ftxui/component/event.hpp>
+#include "SequenceRunner.h"
 #include "VimCubeApp.h"
 
 namespace vimcube::interface {
@@ -20,6 +21,12 @@ namespace vimcube::interface {
         std::string sequenceBuffer;
         VimCubeApp* app = nullptr;
 
+        std::string statusMessage;
+        bool incomplete = false;
+
+        void updatePreview();
+        bool checkCharacter(const char c);
+
     public:
         KeyBinding();
         KeyBinding(std::map<std::string, Action> keyBindingMap);
@@ -27,6 +34,8 @@ namespace vimcube::interface {
         bool runKeyBinding(ftxui::Event event);
         std::string printKeyBuffer();
         void setPreDefinedKeyBinding(VimCubeApp& vimCube);
+
+        const std::string& getStatusMessage() const;
 
         bool isSequence() const;
     };

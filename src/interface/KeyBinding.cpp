@@ -1,4 +1,5 @@
 #include "KeyBinding.h"
+#include <cctype>
 #include <ftxui/component/event.hpp>
 #include "../command/CommandParser.h"
 #include "CommandExecutor.h"
@@ -37,9 +38,9 @@ namespace vimcube::interface {
 
     /*
         Function Name : runKeyBinding
-        Parameters : std::string str
+        Parameters : ftxui::Event event
         Return Type : bool
-        Description : Run input key binding 
+        Description : Run key-binding input
     */
     bool KeyBinding::runKeyBinding(ftxui::Event event)
     {
@@ -52,6 +53,8 @@ namespace vimcube::interface {
                 app->discardSnapshot();
                 this->sequenceBuffer.clear();
                 this->mode = Mode::NORMAL;
+                this->statusMessage.clear();
+                this->incomplete = false;
             }
 
             else if (event == ftxui::Event::Character(';'))
@@ -60,6 +63,17 @@ namespace vimcube::interface {
                 app->clearSelectGeo();
                 this->sequenceBuffer.clear();
                 this->mode = Mode::NORMAL;
+                this->statusMessage.clear();
+                this->incomplete = false;
+            }
+
+            else if (event.is_character())
+            {
+                if (checkCharacter(event.character()[0]))
+                {
+                    this->sequenceBuffer.append(event.character());
+                    updatePreview();
+                }
             }
 
             return true;
@@ -80,6 +94,7 @@ namespace vimcube::interface {
                     app->saveSnapshot();
                     this->sequenceBuffer.append(c);
                     this->mode = Mode::SEQUENCE;
+                    updatePreview();
                     return true;
                 }
             }
@@ -91,6 +106,7 @@ namespace vimcube::interface {
                     app->saveSnapshot();
                     this->sequenceBuffer.append(c);
                     this->mode = Mode::SEQUENCE;
+                    updatePreview();
                     return true;
                 }
             }
@@ -152,8 +168,49 @@ namespace vimcube::interface {
         this->insertKeyToMap("s", [&]() { vimCube.getCamera().zoomOut(0.005f); });
     }
 
+    /*
+        Function Name : getStatusMessage 
+        Parameters : -
+        Return Type : const std::string&
+        Description : Return statusMessage
+    */
+    const std::string& KeyBinding::getStatusMessage() const
+    {
+        return this->statusMessage;
+    }
+
+    /*
+        Function Name : isSequence 
+        Parameters : -
+        Return Type : bool
+        Description : Check isSequence
+    */
     bool KeyBinding::isSequence() const
     {
         return (this->mode == Mode::SEQUENCE);
+    }
+
+    /*
+        Function Name : updatePreview 
+        Parameters : -
+        Return Type : void
+        Description : Run previewSequence() and update status
+    */
+    void KeyBinding::updatePreview()
+    {
+        vimcube::interface::RunnerResult r = vimcube::interface::previewSequence(*app, this->sequenceBuffer);
+        this->statusMessage = r.errorMsg;
+        this->incomplete = r.incomplete;
+    }
+
+    /*
+        Function Name : checkCharacter 
+        Parameters : const char c
+        Return Type : bool
+        Description : Check if character is valid
+    */
+    bool KeyBinding::checkCharacter(const char c)
+    {
+        return (vimcube::command::classifyVerbStart(c) != vimcube::command::VerbType::NONE || c == '+' || c == '-' || c == '.' || c == 'x' || c == 'y' || c == 'z' || ('0' <= c && c <= '9'));
     }
 }

@@ -10,6 +10,7 @@ namespace vimcube::interface {
     {
         bool ok = false;
         std::string errorMsg;
+        bool incomplete = false;
 
         RunnerResult() = default;
         RunnerResult(bool ok) : ok(ok) {}
@@ -17,6 +18,7 @@ namespace vimcube::interface {
     };
 
     RunnerResult runSequence(VimCubeApp& app, const std::string& input);
+    RunnerResult previewSequence(VimCubeApp& app, const std::string& input);
 }
 
 #endif

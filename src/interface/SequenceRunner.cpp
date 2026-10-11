@@ -29,4 +29,46 @@ namespace vimcube::interface {
 
         return RunnerResult(true);
     }
+    
+    /*
+        Function Name : previewSequence
+        Parameters : VimCubeApp& app, const std::string& input
+        Return Type : RunnerResult
+        Description : Make preview of RunnerResult object
+    */
+    RunnerResult previewSequence(VimCubeApp& app, const std::string& input)
+    {
+        RunnerResult result;
+        app.restoreSnapshot();
+        vimcube::command::ParseResult parseResult = vimcube::command::parse(input);
+        vimcube::command_executor::ExecuteResult exeResult;
+        
+        if(parseResult.ok)
+        {
+            exeResult = vimcube::command_executor::execute(app, parseResult.commands);
+            if (!exeResult.ok)
+            {
+                result.errorMsg = exeResult.errorMsg;
+            }
+            else
+            {
+                result.ok = true;
+            }
+            return result;
+        }
+        else
+        {
+            exeResult = vimcube::command_executor::execute(app, parseResult.partialCommands);
+            if (!exeResult.ok)
+            {
+                result.errorMsg = exeResult.errorMsg;
+            }
+            else
+            {
+                result.errorMsg = parseResult.errorMsg;
+                result.incomplete = parseResult.incomplete;
+            }
+            return result;
+        }
+    }
 }

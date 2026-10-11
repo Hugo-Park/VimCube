@@ -161,11 +161,12 @@ namespace vimcube::interface {
                 text("Command Window") | bold | center,
                 separator(),
                 vbox(std::move(historyElements)) | flex,
+                text(keyBinding.getStatusMessage()) | color(Color::Red),    // FOR ERROR TEST (DELETE LATER)
                 separator(),
                 hbox({
                     text("$") | bold,
                     inputBox->Render() | flex,
-                    text(keyBinding.printKeyBuffer()) | bold | center | size(WIDTH, EQUAL, 5) | color(Color::Yellow1)
+                    text(keyBinding.printKeyBuffer()) | bold | center | size(WIDTH, EQUAL, 10) | color(Color::Yellow1)
                 }),
             }) | border;
         });

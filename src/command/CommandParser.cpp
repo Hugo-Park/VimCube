@@ -215,4 +215,35 @@ namespace vimcube::command {
         result.ok = true;
         return result;
     }
+
+    /*
+        Function Name : classifyVerbStart
+        Parameters : const char c
+        Return Type : VerbType
+        Description : Classify the first character of Verb
+    */
+    VerbType classifyVerbStart(const char c)
+    {
+        auto it = std::find_if(verbTable.begin(), verbTable.end(), [c](const Verb& v){ return c == v.name[0];});
+        if (it == verbTable.end())
+            return VerbType::NONE;
+
+        switch (it->op)
+        {
+            case (Op::CreateCube):
+            case (Op::CreateSphere):
+                return VerbType::CREATE;
+
+            case (Op::Move):
+            case (Op::Scale):
+            case (Op::ScaleUniform):
+            case (Op::Rotate):
+            case (Op::Delete):
+                return VerbType::EDIT;
+
+            case (Op::Nothing):
+                return VerbType::NONE;
+        }
+        return VerbType::NONE;
+    }
 }

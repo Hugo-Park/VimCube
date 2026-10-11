@@ -9,11 +9,11 @@ namespace vimcube::command {
     struct ParseResult
     {
         bool ok = false;
-        std::vector<vimcube::command::Command> commands;    // Parsed commands
-        std::string errorMsg;                               // Error message
-        size_t errorPos = 0;                                // Position of error string
-        std::vector<vimcube::command::Command> partialCommands;
-        bool incomplete = false;
+        std::vector<vimcube::command::Command> commands;            // Parsed commands
+        std::string errorMsg;                                       // Error message
+        size_t errorPos = 0;                                        // Position of error string
+        std::vector<vimcube::command::Command> partialCommands;     // Part of commands
+        bool incomplete = false;                                    // Check if incomplete
 
         ParseResult() = default;
         ParseResult(bool ok, std::vector<vimcube::command::Command> cmds, std::string errMsg, size_t errPos) : ok(ok), commands(cmds), errorMsg(errMsg), errorPos(errPos) {}
@@ -21,6 +21,8 @@ namespace vimcube::command {
     };
 
     ParseResult parse(const std::string& input);
+
+    VerbType classifyVerbStart(const char c);
 }
 
 #endif

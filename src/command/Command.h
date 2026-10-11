@@ -6,6 +6,7 @@
 namespace vimcube::command {
 
     enum class Op { Nothing, CreateCube, CreateSphere, Move, Scale, ScaleUniform, Rotate, Delete };
+    enum class VerbType { NONE, CREATE, EDIT };
 
     struct Command
     {

@@ -1,4 +1,5 @@
 #include "KeyBinding.h"
+#include <ftxui/component/event.hpp>
 #include "../command/CommandParser.h"
 #include "CommandExecutor.h"
 #include "SequenceRunner.h"
@@ -42,28 +43,71 @@ namespace vimcube::interface {
     */
     bool KeyBinding::runKeyBinding(ftxui::Event event)
     {
-        if (!event.is_character())
-            return false;
-
-        Dq.push_back(event.character()[0]);
-        std::string str(Dq.begin(), Dq.end());  // make string with char in deque
-        keyBuffer = str;
-
-        auto it = keyBindingMap.find(keyBuffer);
-        if (it != keyBindingMap.end())
+        // In sequence mode
+        if (this->mode == Mode::SEQUENCE)
         {
-            it->second();
-            this->keyBuffer.clear();
-            this->Dq.clear();
+            if (event == ftxui::Event::Escape)
+            {
+                app->restoreSnapshot();
+                app->discardSnapshot();
+                this->sequenceBuffer.clear();
+                this->mode = Mode::NORMAL;
+            }
+
+            else if (event == ftxui::Event::Character(';'))
+            {
+                app->discardSnapshot();
+                app->clearSelectGeo();
+                this->sequenceBuffer.clear();
+                this->mode = Mode::NORMAL;
+            }
+
             return true;
         }
 
-        // if deque size is over 3 (if any string matches with keybindings)
-        if (Dq.size() >= 3)
+        // In normal mode
+        else if (this->mode == Mode::NORMAL)
         {
-            Dq.clear();
-        }
+            if (!event.is_character())
+                return false;
+            std::string c = event.character();
+            vimcube::command::VerbType type = vimcube::command::classifyVerbStart(c[0]);
 
+            if (type == vimcube::command::VerbType::CREATE)
+            {
+                if (app->getSelectedGeo() == nullptr)
+                {
+                    app->saveSnapshot();
+                    this->sequenceBuffer.append(c);
+                    this->mode = Mode::SEQUENCE;
+                    return true;
+                }
+            }
+
+            else if (type == vimcube::command::VerbType::EDIT)
+            {
+                if (app->getSelectedGeo() != nullptr)
+                {
+                    app->saveSnapshot();
+                    this->sequenceBuffer.append(c);
+                    this->mode = Mode::SEQUENCE;
+                    return true;
+                }
+            }
+
+            else if (type == vimcube::command::VerbType::NONE)
+            {
+                auto it = keyBindingMap.find(c);
+
+                // If find successfully
+                if (it != keyBindingMap.end())
+                {
+                    it->second();
+                    return true;
+                }
+                return false;
+            }
+        }
         return false;
     }
 
@@ -75,7 +119,7 @@ namespace vimcube::interface {
     */
     std::string KeyBinding::printKeyBuffer()
     {
-        return keyBuffer;
+        return this->sequenceBuffer;
     }
 
     /*
@@ -84,13 +128,10 @@ namespace vimcube::interface {
         Return Type : void
         Description : Set dictonary to predefined key binding. Edit this function to add new key binding(dev).
     */
-    void KeyBinding::setPreDefinedKeyBinding(VimCubeApp& vimCube, std::vector<std::string>& commandHistory)
+    void KeyBinding::setPreDefinedKeyBinding(VimCubeApp& vimCube)
     {
-        this->insertKeyToMap("qq", [&]() { commandHistory.clear(); vimCube.setActiveTab(0); });
-        this->insertKeyToMap("ee", [&]() { 
-            vimcube::interface::RunnerResult runResult = runSequence(vimCube, "c30m20z");
-            commandHistory.push_back(runResult.errorMsg);
-        });
+        this->app = &vimCube;
+
         this->insertKeyToMap("n", [&]() { vimCube.selectNextGeo(); });
         this->insertKeyToMap("N", [&]() { vimCube.selectPrevGeo(); });
 
@@ -109,5 +150,10 @@ namespace vimcube::interface {
 
         this->insertKeyToMap("a", [&]() { vimCube.getCamera().zoomIn(0.005f); });
         this->insertKeyToMap("s", [&]() { vimCube.getCamera().zoomOut(0.005f); });
+    }
+
+    bool KeyBinding::isSequence() const
+    {
+        return (this->mode == Mode::SEQUENCE);
     }
 }

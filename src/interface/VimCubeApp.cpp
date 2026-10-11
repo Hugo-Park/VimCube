@@ -128,7 +128,7 @@ namespace vimcube::interface {
         static bool isKeyBindingSet = false;
         if (!isKeyBindingSet)
         {
-            keyBinding.setPreDefinedKeyBinding(*(this), commandHistory);
+            keyBinding.setPreDefinedKeyBinding(*(this));
             isKeyBindingSet = true;
         }
 
@@ -227,6 +227,12 @@ namespace vimcube::interface {
         // return CatchEvent()
         return CatchEvent(mainLayout, [=, &screen](Event event) {
             
+            if (keyBinding.isSequence())
+            {
+                keyBinding.runKeyBinding(event);
+                return true;
+            }
+
             // enter key event handling
             if (event == Event::Return) {
                 if (commandInput.empty()) return true;

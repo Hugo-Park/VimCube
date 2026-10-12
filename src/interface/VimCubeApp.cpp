@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
+#include <vector>
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
 
@@ -181,6 +182,10 @@ namespace vimcube::interface {
 
             auto c = ftxui::Canvas(canvasWidth, canvasHeight);
             
+            vimcube::math::Matrix4by4 m;
+            vimcube::math::constructIdentityMatrix4by4(m);
+            this->gridIndicator = vimcube::geo_factory::createGridIndicator(5);
+            vimcube::geo_draw::draw(m, this->mainCamera, this->gridIndicator, c, ftxui::Color::GrayDark);    // Draw grid
             for (auto& obj : this->sceneGeos)
             {
                 vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color::Yellow : ftxui::Color::White);   // Draw Geometry
@@ -191,10 +196,8 @@ namespace vimcube::interface {
 
             // Set Camera for axis indicator
             vimcube::camera::Camera axisCamera(vimcube::camera::ProjectionMode::ISOMETRIC, {0, 0, 0}, this->mainCamera.getUp(), this->mainCamera.getAzimuth(), this->mainCamera.getElevation(), 5.0f );
-            vimcube::geometry::Mesh axisMesh = vimcube::geo_factory::createAxisIndicator(8);
-            vimcube::math::Matrix4by4 m;
-            vimcube::math::constructIdentityMatrix4by4(m);
-            vimcube::geo_draw::draw(m, axisCamera, axisMesh, x, ftxui::Color::White);    // Draw axis indicator
+            this->axisIndicator = vimcube::geo_factory::createAxisIndicator(8);
+            vimcube::geo_draw::draw(m, axisCamera, this->axisIndicator, x, ftxui::Color::White);    // Draw axis indicator
 
             auto leftOffset = emptyElement() | size(WIDTH, EQUAL, 1);
             auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);

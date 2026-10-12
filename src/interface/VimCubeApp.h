@@ -19,14 +19,16 @@ namespace vimcube::interface {
     {
     private:
         int activeTab = 0;
+
         vimcube::geometry::Mesh axisIndicator;
+        std::vector<vimcube::geometry::Line3d> gridIndicator;
         std::vector<vimcube::geometry::SceneGeometry> sceneGeos;
         uint32_t nextId = 0;
 
         vimcube::camera::Camera mainCamera{
             vimcube::camera::ProjectionMode::ISOMETRIC,
             { 0.0f, 0.0f, 0.0f },
-            { 0.0f, 0.0f, 1.0f }
+            { 0.0f, 0.0f, 1.0f }, 0.05f
         }; // This Camera object will exist until the program ends
 
         // For snapshot features

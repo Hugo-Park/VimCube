@@ -11,5 +11,7 @@
 */
 namespace vimcube::geo_draw {
     void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const vimcube::geometry::Mesh& mesh, ftxui::Canvas& canvas, ftxui::Color color);
+    void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const vimcube::geometry::Line3d& line, ftxui::Canvas& canvas, ftxui::Color color);
+    void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const std::vector<vimcube::geometry::Line3d>& lines, ftxui::Canvas& canvas, ftxui::Color color);
 }
 #endif

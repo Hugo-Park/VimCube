@@ -38,6 +38,26 @@ namespace vimcube::geo_factory {
         return vimcube::geometry::Mesh(vertices, edges);
     }
 
+    std::vector<vimcube::geometry::Line3d> createGridIndicator(int size)
+    {
+        std::vector<vimcube::geometry::Line3d> lines;
+
+        for (int i = 0; i < 9; i++)
+        {
+            vimcube::geometry::Point3d pt0(-4 * size, (i-4) * size, 0);
+            vimcube::geometry::Point3d pt1(4 * size, (i-4) * size, 0);
+            lines.push_back(vimcube::geometry::Line3d(pt0, pt1));
+        }
+
+        for (int i = 0; i < 9; i++)
+        {
+            vimcube::geometry::Point3d pt0((i-4) * size, -4 * size, 0);
+            vimcube::geometry::Point3d pt1((i-4) * size, 4 * size, 0);
+            lines.push_back(vimcube::geometry::Line3d(pt0, pt1));
+        }
+
+        return lines;
+    }
     /*
         Function Name : createCube 
         Parameters : float size

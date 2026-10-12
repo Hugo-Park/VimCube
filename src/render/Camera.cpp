@@ -14,6 +14,11 @@ namespace vimcube::camera
         updateCameraPosition();
     }
 
+    Camera::Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up, float zoom) : projectionMode_(projectionMode), target_(target), up_(up), zoom_(zoom)
+    {
+        resetCamera();
+    }
+
     // Setter
     void Camera::setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode)
     {

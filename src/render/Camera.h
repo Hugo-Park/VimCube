@@ -32,17 +32,18 @@ namespace vimcube::camera {
 
         // For Isometric Mode
         float zoom_ = 0.1f;
-        float zoomMin_ = 0.01f;
+        float zoomMin_ = 0.05f;
         float zoomMax_ = 1000.0f;
 
         // For Perspective Mode
         float fieldOfView_ = PI / 2;
-        float nearClip_ = 0.1f;
+        float nearClip_ = 0.01f;
         float farClip_ = 100.0f;
 
     public:
         // Constructor
         Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up);
+        Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up, float zoom);
 
         Camera(const vimcube::camera::ProjectionMode& projectionMode, const vimcube::geometry::Vector3d& target, const vimcube::geometry::Vector3d& up, float azimuth, float elevation, float radius);
         // Setter

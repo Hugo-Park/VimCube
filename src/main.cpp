@@ -1,15 +1,11 @@
-#include <iostream>
 #include "interface/VimCubeApp.h"
-using namespace std;
-using namespace ftxui;
-using namespace vimcube::interface;
 
 int main()
 {
-    auto screen = ScreenInteractive::FullscreenAlternateScreen();
-    VimCubeApp vimCube;
+    auto screen = ftxui::ScreenInteractive::FullscreenAlternateScreen();
+    vimcube::interface::VimCubeApp app;
 
-    screen.Loop(vimCube.createTab(screen));
+    screen.Loop(app.createTab(screen));
 
     return 0;
 }

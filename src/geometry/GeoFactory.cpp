@@ -8,36 +8,24 @@ namespace vimcube::geo_factory {
     /*
         Function Name : createAxisIndicator
         Parameters : float length
-        Return Type : vimcube::geometry::Mesh 
+        Return Type : std::vector<vimcube::geometry::Line3d>
         Description : Create an axis indicator
     */
-    vimcube::geometry::Mesh createAxisIndicator(float length)
+    std::vector<vimcube::geometry::Line3d> createAxisIndicator(float length)
     {
-        std::vector<vimcube::geometry::Vertex> vertices;
+        std::vector<vimcube::geometry::Line3d> lines;
 
         vimcube::geometry::Point3d pt0(0, 0, 0);
         vimcube::geometry::Point3d pt1(length, 0, 0);
         vimcube::geometry::Point3d pt2(0, length, 0);
         vimcube::geometry::Point3d pt3(0, 0, length);
 
-        vertices.push_back(vimcube::geometry::Vertex(pt0));
-        vertices.push_back(vimcube::geometry::Vertex(pt1));
-        vertices.push_back(vimcube::geometry::Vertex(pt2));
-        vertices.push_back(vimcube::geometry::Vertex(pt3));
+        lines.push_back(vimcube::geometry::Line3d(pt0, pt1));
+        lines.push_back(vimcube::geometry::Line3d(pt0, pt2));
+        lines.push_back(vimcube::geometry::Line3d(pt0, pt3));
 
-        std::vector<vimcube::geometry::Edge> edges;
-
-        vimcube::geometry::Edge e0(vimcube::geometry::Edge(0, 1));
-        vimcube::geometry::Edge e1(vimcube::geometry::Edge(0, 2));
-        vimcube::geometry::Edge e2(vimcube::geometry::Edge(0, 3));
-
-        edges.push_back(e0);
-        edges.push_back(e1);
-        edges.push_back(e2);
-
-        return vimcube::geometry::Mesh(vertices, edges);
+        return lines;
     }
-
     std::vector<vimcube::geometry::Line3d> createGridIndicator(int size)
     {
         std::vector<vimcube::geometry::Line3d> lines;

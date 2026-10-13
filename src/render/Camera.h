@@ -32,8 +32,8 @@ namespace vimcube::camera {
 
         // For Isometric Mode
         float zoom_ = 0.1f;
-        float zoomMin_ = 0.05f;
-        float zoomMax_ = 1000.0f;
+        float zoomMin_ = 0.02f;
+        float zoomMax_ = 1.0f;
 
         // For Perspective Mode
         float fieldOfView_ = PI / 2;

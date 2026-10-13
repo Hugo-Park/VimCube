@@ -1,5 +1,6 @@
 #include "GeoDraw.h"
 #include <ftxui/dom/canvas.hpp>
+#include <ftxui/screen/color.hpp>
 #include <vector>
 #include "Camera.h"
 
@@ -149,6 +150,37 @@ namespace vimcube::geo_draw {
             int screenX2 = static_cast<int>(point2.x);
             int screenY2 = static_cast<int>(point2.y);
             canvas.DrawPointLine(screenX1, screenY1, screenX2, screenY2, color);
+        }
+    }
+
+    /*
+        Function Name : draw 
+        Parameters : const vimcube::math::Matrix4by4& modelMatrix, std::vector<vimcube::geometry::Line3d>& lines, ftxui::Canvas& canvas, std::vector<ftxui::Color> colors
+        Return Type : void
+        Description : Draw Line3d objects with given colors in order
+    */
+    void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const std::vector<vimcube::geometry::Line3d>& lines, ftxui::Canvas& canvas, std::vector<ftxui::Color> colors)
+    {
+        size_t i = 0;
+        for (const auto& l : lines)
+        {
+            auto pt1 = l.start_;
+            auto pt2 = l.end_;
+
+            vimcube::geometry::Point2d point1 = camera.projectToCanvas(modelMatrix, pt1, canvas.width(), canvas.height());
+            vimcube::geometry::Point2d point2 = camera.projectToCanvas(modelMatrix, pt2, canvas.width(), canvas.height());
+
+            if(!clipCanvas(point1, point2, canvas))
+                continue;
+
+            int screenX1 = static_cast<int>(point1.x);
+            int screenY1 = static_cast<int>(point1.y);
+            int screenX2 = static_cast<int>(point2.x);
+            int screenY2 = static_cast<int>(point2.y);
+
+            canvas.DrawPointLine(screenX1, screenY1, screenX2, screenY2, colors.at(i % colors.size()));
+
+            i++;
         }
     }
 }

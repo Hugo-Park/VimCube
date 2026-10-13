@@ -20,8 +20,11 @@ namespace vimcube::interface {
     private:
         int activeTab = 0;
 
-        vimcube::geometry::Mesh axisIndicator;
+        std::vector<vimcube::geometry::Line3d> axisIndicator;
         std::vector<vimcube::geometry::Line3d> gridIndicator;
+        bool hasAxisIndicator = true;
+        bool hasGrid = true;
+
         std::vector<vimcube::geometry::SceneGeometry> sceneGeos;
         uint32_t nextId = 0;
 
@@ -56,6 +59,11 @@ namespace vimcube::interface {
         void saveSnapshot();
         void restoreSnapshot();
         void discardSnapshot();
+
+        bool getHasAxisIndicator() const;
+        void setHasAxisIndicator(const bool b);
+        bool getHasGrid() const;
+        void setHasGrid(const bool b);
     };
 }
 #endif

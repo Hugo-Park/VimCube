@@ -119,43 +119,17 @@ namespace vimcube::interface {
             }
             vimCube.removeGeoFromScene(id);
         });
+        
+        this->insertItemToMap("gr", [&](const std::vector<std::string>& args) {
 
-        this->insertItemToMap("cube", [&](const std::vector<std::string>& args) {
-            float size = 10.0f;
-
-            if (!args.empty()) {
-                try {
-                    size = std::stof(args[0]);
-                }
-
-                catch (const std::invalid_argument& e) {
-                    return;
-                }
-            }
-
-            vimcube::geometry::Mesh returnMesh = vimcube::geo_factory::createCube(size);
-            vimCube.addGeoToScene(returnMesh);
+            if (vimCube.getHasGrid()) vimCube.setHasGrid(false);
+            else vimCube.setHasGrid(true);
         });
 
-        this->insertItemToMap("sphere", [&](const std::vector<std::string>& args) {
-            float radius = 10.0f;
-            uint32_t rings = 10;
-            uint32_t segments = 10;
+        this->insertItemToMap("ax", [&](const std::vector<std::string>& args) {
 
-            if (!args.empty()){
-                try {
-                    radius = std::stof(args[0]);
-                    rings = std::stof(args[1]);
-                    segments = std::stof(args[2]);
-                }
-
-                catch (const std::invalid_argument& e) {
-                    return;
-                }
-            }
-
-            vimcube::geometry::Mesh returnMesh = vimcube::geo_factory::createSphere(radius, rings, segments);
-            vimCube.addGeoToScene(returnMesh);
+            if (vimCube.getHasAxisIndicator()) vimCube.setHasAxisIndicator(false);
+            else vimCube.setHasAxisIndicator(true);
         });
     }
 }

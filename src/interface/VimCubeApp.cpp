@@ -184,35 +184,47 @@ namespace vimcube::interface {
             
             vimcube::math::Matrix4by4 m;
             vimcube::math::constructIdentityMatrix4by4(m);
-            this->gridIndicator = vimcube::geo_factory::createGridIndicator(5);
-            vimcube::geo_draw::draw(m, this->mainCamera, this->gridIndicator, c, ftxui::Color::GrayDark);    // Draw grid
+
+            // Draw Grid
+            if (this->hasGrid)
+            {
+                this->gridIndicator = vimcube::geo_factory::createGridIndicator(5);
+                vimcube::geo_draw::draw(m, this->mainCamera, this->gridIndicator, c, ftxui::Color::GrayDark);
+            }
+
+            // Draw Scene Geometries
             for (auto& obj : this->sceneGeos)
             {
-                vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color::Yellow : ftxui::Color::White);   // Draw Geometry
+                vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color::Yellow : ftxui::Color::White);
             }
 
             // Canvas for axis screen
             auto x = ftxui::Canvas(terminalSize.dimx * 0.15, terminalSize.dimx * 0.15);
 
-            // Set Camera for axis indicator
-            vimcube::camera::Camera axisCamera(vimcube::camera::ProjectionMode::ISOMETRIC, {0, 0, 0}, this->mainCamera.getUp(), this->mainCamera.getAzimuth(), this->mainCamera.getElevation(), 5.0f );
-            this->axisIndicator = vimcube::geo_factory::createAxisIndicator(8);
-            vimcube::geo_draw::draw(m, axisCamera, this->axisIndicator, x, ftxui::Color::White);    // Draw axis indicator
 
-            auto leftOffset = emptyElement() | size(WIDTH, EQUAL, 1);
-            auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);
+            // Draw Axis Indicator
+            if (this->hasAxisIndicator)
+            {
+                // Set Camera for axis indicator
+                vimcube::camera::Camera axisCamera(vimcube::camera::ProjectionMode::ISOMETRIC, {0, 0, 0}, this->mainCamera.getUp(), this->mainCamera.getAzimuth(), this->mainCamera.getElevation(), 5.0f );
+                this->axisIndicator = vimcube::geo_factory::createAxisIndicator(8);
+                std::vector<ftxui::Color> axisColors = {ftxui::Color::Red, ftxui::Color::Blue, ftxui::Color::Green};
+                vimcube::geo_draw::draw(m, axisCamera, this->axisIndicator, x, axisColors);    // Draw axis indicator
+                auto leftOffset = emptyElement() | size(WIDTH, EQUAL, 1);
+                auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);
 
-            return dbox({ canvas(std::move(c)) | center | border, 
-                    vbox({ filler(), 
-                            hbox({ leftOffset,
-                            canvas(std::move(x)) 
-                            | size(WIDTH, EQUAL, terminalSize.dimx * 0.15 / 2) 
-                            | size(HEIGHT, EQUAL, terminalSize.dimx * 0.15 / 4) 
-                            | borderDashed }),
-                            bottomOffset
-                        })
-                    });
-            // return canvas(std::move(c)) | center | border;
+                return dbox({ canvas(std::move(c)) | center | border, 
+                        vbox({ filler(), 
+                                hbox({ leftOffset,
+                                canvas(std::move(x)) 
+                                | size(WIDTH, EQUAL, terminalSize.dimx * 0.15 / 2) 
+                                | size(HEIGHT, EQUAL, terminalSize.dimx * 0.15 / 4) 
+                                | borderDashed }),
+                                bottomOffset
+                            })
+                        });
+            }
+            else return canvas(std::move(c)) | center | border;
         });
 
         // Render all layouts
@@ -478,5 +490,49 @@ namespace vimcube::interface {
     {
         this->hasSnapshot = false;
         this->savedSceneGeos.clear();
+    }
+
+    /*
+        Function Name : getHasAxisIndicator
+        Parameters : -
+        Return Type : bool
+        Description : Return hasAxisIndicator
+    */
+    bool VimCubeApp::getHasAxisIndicator() const
+    {
+        return this->hasAxisIndicator;
+    }
+
+    /*
+        Function Name : setHasAxisIndicator
+        Parameters : const bool b
+        Return Type : void
+        Description : Set hasAxisIndicator
+    */
+    void VimCubeApp::setHasAxisIndicator(const bool b)
+    {
+        this->hasAxisIndicator = b;
+    }
+
+    /*
+        Function Name : getHasGrid
+        Parameters : -
+        Return Type : bool
+        Description : Return hasGrid
+    */
+    bool VimCubeApp::getHasGrid() const
+    {
+        return this->hasGrid; 
+    }
+
+    /*
+        Function Name : setHasGrid
+        Parameters : const bool b
+        Return Type : void
+        Description : Set hasGrid
+    */
+    void VimCubeApp::setHasGrid(const bool b)
+    {
+        this->hasGrid = b;
     }
 }

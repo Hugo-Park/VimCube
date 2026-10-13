@@ -407,15 +407,32 @@ namespace vimcube::interface {
 
     /*
         Function Name : deselectGeo
-        Parameters : -
+        Parameters : uint32_t id
         Return Type : void
-        Description : Deselect geometry
+        Description : Deselect geometry by ID
     */
     void VimCubeApp::deselectGeo(uint32_t id)
     {
         for (auto& obj : sceneGeos)
         {
             if (obj.getId() == id)
+            {
+                obj.setIsSelected(false);
+            }
+        }
+    }
+
+    /*
+        Function Name : deselectGeo
+        Parameters : -
+        Return Type : void
+        Description : Deselect geometry
+    */
+    void VimCubeApp::deselectGeo()
+    {
+        for (auto& obj : sceneGeos)
+        {
+            if (obj.getIsSelected())
             {
                 obj.setIsSelected(false);
             }

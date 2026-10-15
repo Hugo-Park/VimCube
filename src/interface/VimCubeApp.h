@@ -39,6 +39,8 @@ namespace vimcube::interface {
         uint32_t savedId = 0;
         bool hasSnapshot = false;
 
+        bool isFocusMode = false;
+
     public:
         VimCubeApp();
         vimcube::camera::Camera& getCamera();
@@ -49,7 +51,7 @@ namespace vimcube::interface {
 
         uint32_t addGeoToScene(const vimcube::geometry::Mesh& mesh);
         void removeGeoFromScene(uint32_t id);
-        bool selectGeo(uint32_t id);
+        bool selectGeo(uint32_t id, bool moveCamera);
         bool selectNextGeo();
         bool selectPrevGeo();
         void deselectGeo(uint32_t id);
@@ -65,6 +67,10 @@ namespace vimcube::interface {
         void setHasAxisIndicator(const bool b);
         bool getHasGrid() const;
         void setHasGrid(const bool b);
+
+        bool getIsFocusMode() const;
+        void setFocusMode(const bool b);
+        void focusOnSelected();
     };
 }
 #endif

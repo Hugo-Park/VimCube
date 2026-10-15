@@ -288,6 +288,7 @@ namespace vimcube::camera
         this->azimuth_ = INIT_AZIMUTH;
         this->elevation_ = INIT_ELEVATION;
         this->radius_ = INIT_RADIUS;
+        this->target_ = {0,0,0};
         updateCameraPosition();
     }
 }    // namespace vimcube::camera

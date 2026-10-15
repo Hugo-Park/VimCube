@@ -116,14 +116,14 @@ namespace vimcube::command_executor {
                 case (command::Op::CreateCube):
                 {
                     vimcube::geometry::Mesh cube = vimcube::geo_factory::createCube(c.value);
-                    app.selectGeo(app.addGeoToScene(cube));
+                    app.selectGeo(app.addGeoToScene(cube), false);
                     break;
                 }
 
                 case (command::Op::CreateSphere):
                 {
                     vimcube::geometry::Mesh sphere = vimcube::geo_factory::createSphere(c.value, RINGS, SEGMENTS);
-                    app.selectGeo(app.addGeoToScene(sphere));
+                    app.selectGeo(app.addGeoToScene(sphere), false);
                     break;
                 }
 

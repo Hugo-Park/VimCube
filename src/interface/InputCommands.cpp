@@ -85,7 +85,7 @@ namespace vimcube::interface {
                     return;
                 }
             }
-            vimCube.selectGeo(id);
+            vimCube.selectGeo(id, true);
         });
 
         this->insertItemToMap("ds", [&](const std::vector<std::string>& args) { 
@@ -135,6 +135,17 @@ namespace vimcube::interface {
 
             if (vimCube.getHasAxisIndicator()) vimCube.setHasAxisIndicator(false);
             else vimCube.setHasAxisIndicator(true);
+        });
+
+        this->insertItemToMap("f", [&](const std::vector<std::string>& args) {
+
+            if (vimCube.getIsFocusMode()) vimCube.setFocusMode(false);
+            else vimCube.setFocusMode(true);
+        });
+
+        this->insertItemToMap("o", [&](const std::vector<std::string>& args) {
+
+            vimCube.getCamera().resetCamera();
         });
     }
 }

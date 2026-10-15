@@ -5,6 +5,7 @@
 #include <set>
 #include  <algorithm>
 #include "GeoTypes.h"
+#include "../utility/Math.h"
 
 namespace vimcube::geometry {
     /*
@@ -26,6 +27,8 @@ namespace vimcube::geometry {
         const std::vector<Edge>& getEdges() const;
 
         void setEdgesByFaces();
+
+        vimcube::geometry::BoundingBox3d computeBoundingBox(const vimcube::math::Matrix4by4& modelMatrix) const;
     };
 }
 #endif

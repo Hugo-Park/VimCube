@@ -180,6 +180,17 @@ namespace vimcube::interface {
     }
 
     /*
+        Function Name : getMode 
+        Parameters : -
+        Return Type : Mode
+        Description : Return mode
+    */
+    Mode KeyBinding::getMode() const
+    {
+        return this->mode;
+    }
+
+    /*
         Function Name : isSequence 
         Parameters : -
         Return Type : bool
@@ -188,6 +199,17 @@ namespace vimcube::interface {
     bool KeyBinding::isSequence() const
     {
         return (this->mode == Mode::SEQUENCE);
+    }
+
+    /*
+        Function Name : isNormal
+        Parameters : -
+        Return Type : bool
+        Description : Check isNormal
+    */
+    bool KeyBinding::isNormal() const
+    {
+        return (this->mode == Mode::NORMAL);
     }
 
     /*

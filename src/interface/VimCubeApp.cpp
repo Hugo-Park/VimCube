@@ -332,12 +332,13 @@ namespace vimcube::interface {
 
     /*
         Function Name : selectGeo
-        Parameters : uint32_t id
+        Parameters : uint32_t id, bool moveCamera
         Return Type : bool
         Description : Select geometry
     */
-    bool VimCubeApp::selectGeo(uint32_t id)
+    bool VimCubeApp::selectGeo(uint32_t id, bool moveCamera)
     {
+        // moveCamera is true when user selects geometry, not automatically
         bool found = false;
         for (auto& obj : sceneGeos)
         {
@@ -360,6 +361,11 @@ namespace vimcube::interface {
                 obj.setIsSelected(false);
             }
         }
+
+        if (moveCamera && this->isFocusMode)
+        {
+            focusOnSelected();
+        }
         return true;
     }
 
@@ -375,12 +381,13 @@ namespace vimcube::interface {
         auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
         if (it == sceneGeos.end())
         {
-            selectGeo(sceneGeos.begin()->getId());
+            selectGeo(sceneGeos.begin()->getId(), true);
             return true;
         }
         size_t idx = std::distance(sceneGeos.begin(), it);
         size_t nextIdx = (idx + 1) % sceneGeos.size();
-        selectGeo(sceneGeos[nextIdx].getId());
+        selectGeo(sceneGeos[nextIdx].getId(), true);
+
         return true;
     }
 
@@ -396,12 +403,13 @@ namespace vimcube::interface {
         auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
         if (it == sceneGeos.end())
         {
-            selectGeo(sceneGeos.back().getId());
+            selectGeo(sceneGeos.back().getId(), true);
             return true;
         }
         size_t idx = std::distance(sceneGeos.begin(), it);
         size_t nextIdx = (idx + sceneGeos.size() - 1) % sceneGeos.size();
-        selectGeo(sceneGeos[nextIdx].getId());
+        selectGeo(sceneGeos[nextIdx].getId(), true);
+
         return true;
     }
 
@@ -551,5 +559,49 @@ namespace vimcube::interface {
     void VimCubeApp::setHasGrid(const bool b)
     {
         this->hasGrid = b;
+    }
+
+    /*
+        Function Name : getIsFocusMode
+        Parameters : -
+        Return Type : bool
+        Description : Return isFocusMode
+    */
+    bool VimCubeApp::getIsFocusMode() const
+    {
+        return this->isFocusMode;
+    }
+
+    /*
+        Function Name : setFocusMode
+        Parameters : const bool b
+        Return Type : void
+        Description : Set isFocusMode
+    */
+    void VimCubeApp::setFocusMode(const bool b)
+    {
+        this->isFocusMode = b;
+        if (b)
+        {
+            focusOnSelected();
+        }
+    }
+
+    /*
+        Function Name : focusOnSelected
+        Parameters : -
+        Return Type : void
+        Description : Set mainCamera target to the center of the bounding box for focus mode
+    */
+    void VimCubeApp::focusOnSelected()
+    {
+        vimcube::geometry::SceneGeometry* selectedGeoPtr = this->getSelectedGeo();
+        if (selectedGeoPtr != nullptr)
+        {
+            vimcube::geometry::BoundingBox3d bbox = selectedGeoPtr->getMesh().computeBoundingBox(selectedGeoPtr->getTransform().getModelMatrix());
+            vimcube::geometry::Point3d centerPt = bbox.getCenter();
+            this->mainCamera.setTarget({centerPt.x, centerPt.y, centerPt.z});
+            mainCamera.updateCameraPosition();
+        }
     }
 }

@@ -37,7 +37,9 @@ namespace vimcube::interface {
 
         const std::string& getStatusMessage() const;
 
+        Mode getMode() const;
         bool isSequence() const;
+        bool isNormal() const;
     };
 }
 #endif

@@ -164,5 +164,18 @@ namespace vimcube::geometry {
         Face() = default;
         Face(uint32_t v0, uint32_t v1, uint32_t v2) : v0(v0), v1(v1), v2(v2) {};
     };
+
+    /*
+        Class Name : BoundingBox3d 
+        Description : Bounding box of one Mesh object
+    */
+    struct BoundingBox3d {
+        Point3d min;
+        Point3d max;
+
+        BoundingBox3d() = default;
+        BoundingBox3d(Point3d min, Point3d max) : min(min), max(max) {};
+        Point3d getCenter() const { return Point3d({(min.x + max.x) / 2.0f, (min.y + max.y) / 2.0f, (min.z + max.z) / 2.0f}); }
+    };
 }
 #endif

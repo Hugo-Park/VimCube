@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
+#include <ftxui/screen/terminal.hpp>
 #include <vector>
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
@@ -331,6 +332,17 @@ namespace vimcube::interface {
     }
 
     /*
+        Function Name : removeAllGeoFromScene
+        Parameters : -
+        Return Type : void
+        Description : Remove all SceneGeometry
+    */
+    void VimCubeApp::removeAllGeoFromScene()
+    {
+        this->sceneGeos.clear();
+    }
+
+    /*
         Function Name : selectGeo
         Parameters : uint32_t id, bool moveCamera
         Return Type : bool
@@ -601,6 +613,21 @@ namespace vimcube::interface {
             vimcube::geometry::BoundingBox3d bbox = selectedGeoPtr->getMesh().computeBoundingBox(selectedGeoPtr->getTransform().getModelMatrix());
             vimcube::geometry::Point3d centerPt = bbox.getCenter();
             this->mainCamera.setTarget({centerPt.x, centerPt.y, centerPt.z});
+
+            // float R = std::abs(vimcube::math::getDistance(bbox.max, bbox.min)) / 2.0f;
+
+            float R = selectedGeoPtr->getMesh().getMaxDistanceFromCenter(bbox, selectedGeoPtr->getTransform().getModelMatrix());
+
+            if (this->mainCamera.getProjectionMode() == vimcube::camera::ProjectionMode::ISOMETRIC && R != 0)
+            {
+                float canvasWidth = ftxui::Terminal::Size().dimx * 0.6 * 2;
+                float canvasHeight = (ftxui::Terminal::Size().dimy - 4) * 4;
+                if (canvasWidth != 0 && canvasHeight != 0)
+                {
+                    float aspect = canvasWidth / canvasHeight;
+                    this->mainCamera.setZoom(std::min(1.0f, aspect) / R * 0.9f);
+                }
+            }
             mainCamera.updateCameraPosition();
         }
     }

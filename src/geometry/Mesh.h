@@ -29,6 +29,7 @@ namespace vimcube::geometry {
         void setEdgesByFaces();
 
         vimcube::geometry::BoundingBox3d computeBoundingBox(const vimcube::math::Matrix4by4& modelMatrix) const;
+        float getMaxDistanceFromCenter(const vimcube::geometry::BoundingBox3d& bbox, const vimcube::math::Matrix4by4& modelMatrix) const;
     };
 }
 #endif

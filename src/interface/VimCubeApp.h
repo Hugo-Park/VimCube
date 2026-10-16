@@ -51,6 +51,7 @@ namespace vimcube::interface {
 
         uint32_t addGeoToScene(const vimcube::geometry::Mesh& mesh);
         void removeGeoFromScene(uint32_t id);
+        void removeAllGeoFromScene();
         bool selectGeo(uint32_t id, bool moveCamera);
         bool selectNextGeo();
         bool selectPrevGeo();

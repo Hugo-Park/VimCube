@@ -49,6 +49,7 @@ namespace vimcube::camera {
         // Setter
         void setProjectionMode(const vimcube::camera::ProjectionMode& projectionMode);
         void setTarget(const vimcube::geometry::Vector3d& target);
+        void setZoom(const float amount);
         
         // Getter
         const vimcube::camera::ProjectionMode& getProjectionMode() const;

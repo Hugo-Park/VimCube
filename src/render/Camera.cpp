@@ -30,6 +30,11 @@ namespace vimcube::camera
         this->target_ = target;
     }
 
+    void Camera::setZoom(const float amount)
+    {
+        this->zoom_ = amount;
+    }
+
     // Getter
     const vimcube::camera::ProjectionMode& Camera::getProjectionMode() const
     {

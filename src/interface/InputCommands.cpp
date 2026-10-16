@@ -1,5 +1,6 @@
 #include "InputCommands.h"
 #include "../geometry/GeoFactory.h"
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -70,8 +71,22 @@ namespace vimcube::interface {
     */
     void InputCommands::setPredefinedCommands(VimCubeApp& vimCube, std::vector<std::string>& commandHistory)
     {
+        /*
+            Syntax: q
+            Description : Return to title screen
+        */
         this->insertItemToMap("q", [&](const std::vector<std::string>& args) { commandHistory.clear(); vimCube.setActiveTab(0); });
+
+        /*
+            Syntax: clear
+            Description : Clear command history
+        */
         this->insertItemToMap("clear", [&](const std::vector<std::string>& args) { commandHistory.clear(); });
+        
+        /*
+            Syntax: s <id>
+            Description : Select geometry by id
+        */
         this->insertItemToMap("s", [&](const std::vector<std::string>& args) { 
 
             uint32_t id = 0;
@@ -88,6 +103,10 @@ namespace vimcube::interface {
             vimCube.selectGeo(id, true);
         });
 
+        /*
+            Syntax: ds <id>
+            Description : Deselect geometry by id
+        */
         this->insertItemToMap("ds", [&](const std::vector<std::string>& args) { 
 
             uint32_t id = 0;
@@ -104,11 +123,19 @@ namespace vimcube::interface {
             vimCube.deselectGeo(id);
         });
 
+        /*
+            Syntax: ds
+            Description : Deselect selected geometry
+        */
         this->insertItemToMap("ds", [&](const std::vector<std::string>& args) { 
 
             vimCube.deselectGeo();
         });
 
+        /*
+            Syntax: d <id>
+            Description : Delete geometry by id
+        */
         this->insertItemToMap("d", [&](const std::vector<std::string>& args) { 
 
             uint32_t id = 0;
@@ -124,25 +151,59 @@ namespace vimcube::interface {
             }
             vimCube.removeGeoFromScene(id);
         });
+
+        /*
+            Syntax: d
+            Description : Delete selected geometry
+        */
+        this->insertItemToMap("d", [&](const std::vector<std::string>& args) { 
+
+            vimCube.removeGeoFromScene(vimCube.getSelectedGeo()->getId());
+        });
         
+        /*
+            Syntax: dall
+            Description : Delete all geometry
+        */
+        this->insertItemToMap("dall", [&](const std::vector<std::string>& args) { 
+
+            vimCube.removeAllGeoFromScene();
+        });
+
+        /*
+            Syntax: gr
+            Description : Toggle grid indicator
+        */
         this->insertItemToMap("gr", [&](const std::vector<std::string>& args) {
 
             if (vimCube.getHasGrid()) vimCube.setHasGrid(false);
             else vimCube.setHasGrid(true);
         });
 
+        /*
+            Syntax: ax
+            Description : Toggle axis indicator
+        */
         this->insertItemToMap("ax", [&](const std::vector<std::string>& args) {
 
             if (vimCube.getHasAxisIndicator()) vimCube.setHasAxisIndicator(false);
             else vimCube.setHasAxisIndicator(true);
         });
 
+        /*
+            Syntax: f
+            Description : Toggle focus mode
+        */
         this->insertItemToMap("f", [&](const std::vector<std::string>& args) {
 
             if (vimCube.getIsFocusMode()) vimCube.setFocusMode(false);
             else vimCube.setFocusMode(true);
         });
 
+        /*
+            Syntax: o
+            Description : Reset camera position
+        */
         this->insertItemToMap("o", [&](const std::vector<std::string>& args) {
 
             vimCube.getCamera().resetCamera();

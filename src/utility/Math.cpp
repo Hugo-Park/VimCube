@@ -4,6 +4,28 @@
 namespace vimcube::math {
     
     /*
+        Function Name : getDistance
+        Parameters : const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2
+        Return Type : float
+        Description : Get distance between two points
+    */
+    float getDistance(const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2)
+    {
+        vimcube::geometry::Vector3d v1;
+        v1.x = p1.x;
+        v1.y = p1.y;
+        v1.z = p1.z;
+
+        vimcube::geometry::Vector3d v2;
+        v2.x = p2.x;
+        v2.y = p2.y;
+        v2.z = p2.z;
+
+        vimcube::geometry::Vector3d v3 = subtractVector3d(v1, v2);
+        return v3.getSize();
+    }
+
+    /*
         Function Name : initMatrix3by3
         Parameters : Matrix3by3& m
         Return Type : void

@@ -148,22 +148,27 @@ namespace vimcube::interface {
     {
         this->app = &vimCube;
 
+        // Select next/previous
         this->insertKeyToMap("n", [&]() { vimCube.selectNextGeo(); });
         this->insertKeyToMap("N", [&]() { vimCube.selectPrevGeo(); });
 
+        // Rotate camera fast
         this->insertKeyToMap("H", [&]() { vimCube.getCamera().orbitLeft(0.2f); });
         this->insertKeyToMap("L", [&]() { vimCube.getCamera().orbitRight(0.2f); });
         this->insertKeyToMap("J", [&]() { vimCube.getCamera().orbitDown(0.2f); });
         this->insertKeyToMap("K", [&]() { vimCube.getCamera().orbitUp(0.2f); });
 
+        // Rotate camrea normal
         this->insertKeyToMap("h", [&]() { vimCube.getCamera().orbitLeft(0.1f); });
         this->insertKeyToMap("l", [&]() { vimCube.getCamera().orbitRight(0.1f); });
         this->insertKeyToMap("j", [&]() { vimCube.getCamera().orbitDown(0.1f); });
         this->insertKeyToMap("k", [&]() { vimCube.getCamera().orbitUp(0.1f); });
 
+        // Zoom in and out fast
         this->insertKeyToMap("A", [&]() { vimCube.getCamera().zoomIn(0.01f); });
         this->insertKeyToMap("S", [&]() { vimCube.getCamera().zoomOut(0.01f); });
 
+        // Zoom in and out normal
         this->insertKeyToMap("a", [&]() { vimCube.getCamera().zoomIn(0.005f); });
         this->insertKeyToMap("s", [&]() { vimCube.getCamera().zoomOut(0.005f); });
     }

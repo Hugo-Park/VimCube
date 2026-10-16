@@ -16,6 +16,8 @@ namespace vimcube::math {
         Matrix4by4() = default;
     };
 
+    float getDistance(const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2);
+
     /* Matrix Methods */
 
     void initMatrix3by3(Matrix3by3& m);

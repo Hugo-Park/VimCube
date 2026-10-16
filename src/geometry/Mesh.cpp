@@ -91,4 +91,24 @@ namespace vimcube::geometry {
 
         return BoundingBox3d({min.x, min.y, min.z}, {max.x, max.y, max.z});
     }
+
+    /*
+        Function Name : getMaxDistanceFromCenter
+        Parameters : -
+        Return Type : const vimcube::geometry::BoundingBox3d& bbox
+        Description : Get maximum distance from center of bounding box to vertices
+    */
+    float Mesh::getMaxDistanceFromCenter(const vimcube::geometry::BoundingBox3d& bbox, const vimcube::math::Matrix4by4& modelMatrix) const
+    {
+        vimcube::geometry::Point3d center = bbox.getCenter();
+        float maxDistance = 0;
+        for (const auto& v : this->vertices_)
+        {
+            vimcube::geometry::Point4d pt = vimcube::math::castToPoint4d(v.position);
+            vimcube::geometry::Point4d worldPt = vimcube::math::getProduct4by4andPoint4d(modelMatrix, pt);
+            float distance = vimcube::math::getDistance(center, { worldPt.x, worldPt.y, worldPt.z });
+            maxDistance = std::max(maxDistance, distance);
+        }
+        return maxDistance;
+    }
 }

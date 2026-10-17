@@ -251,14 +251,20 @@ namespace vimcube::interface {
         // return CatchEvent()
         return CatchEvent(mainLayout, [this](Event event) {
             
-            if (keyBinding.isSequence())
+            if (this->appMode == AppMode::SEQUENCE)
             {
                 keyBinding.runKeyBinding(event);
                 return true;
             }
 
-            // enter key event handling
-            if (event == Event::Return) {
+            if (event == Event::Character(':') && this->appMode == AppMode::NORMAL)
+            {
+                this->appMode = AppMode::COMMAND;
+                return false;
+            }
+
+            // Enter = run command
+            if (event == Event::Return && this->appMode == AppMode::COMMAND) {
                 if (commandInput.empty()) return true;
                 
                 if (commandInput[0] == ':')
@@ -267,9 +273,33 @@ namespace vimcube::interface {
                 }
 
                 commandInput.clear();
+                this->appMode = AppMode::NORMAL;
                 return true;
             }
             
+            // ESC = clear input
+            if (event == Event::Escape && this->appMode == AppMode::COMMAND) {
+                commandInput.clear();
+                this->appMode = AppMode::NORMAL;
+                return true;
+            }
+
+            // ESC = Deselect geometry
+            if (event == Event::Escape) {
+                if (this->appMode == AppMode::NORMAL || this->isFocusMode)
+                {
+                    deselectGeo();
+                    return true;
+                }
+                return false;
+            }
+
+            // Backspace all = normal mode
+            if (event == Event::Backspace && commandInput.size() <= 1)
+            {
+                this->appMode = AppMode::NORMAL;
+            }
+
             // insert string if it has a colon(:) in first character
             if (event.is_character())
             {
@@ -577,6 +607,28 @@ namespace vimcube::interface {
     }
 
     /*
+        Function Name : getAppMode
+        Parameters : -
+        Return Type : -
+        Description : Get AppMode
+    */
+    AppMode VimCubeApp::getAppMode() const
+    {
+        return this->appMode;
+    }
+
+    /*
+        Function Name : setAppMode
+        Parameters : AppMode mode
+        Return Type : -
+        Description : Set AppMode
+    */
+    void VimCubeApp::setAppMode(AppMode mode)
+    {
+        this->appMode = mode;
+    }
+
+    /*
         Function Name : getIsFocusMode
         Parameters : -
         Return Type : bool
@@ -635,12 +687,20 @@ namespace vimcube::interface {
         }
     }
 
+    /*
+        Function Name : getCurrentMode
+        Parameters : -
+        Return Type : -
+        Description : Get current AppMode as string
+    */
     std::string VimCubeApp::getCurrentMode() const
     {
-        if (this->isFocusMode)
-            return "--FOCUS--";
-        else if (this->keyBinding.getMode() == Mode::SEQUENCE)
+        if (this->appMode == AppMode::COMMAND)
+            return "--COMMAND--";
+        else if (this->appMode == AppMode::SEQUENCE)
             return "--SEQUENCE--";
+        else if (this->isFocusMode)
+            return "--FOCUS--";
         else
             return "--NORMAL--";
     }

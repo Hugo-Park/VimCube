@@ -1,5 +1,6 @@
 #ifndef VIMCUBE_APP_H
 #define VIMCUBE_APP_H
+#include <ftxui/component/app.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/dom/elements.hpp>
@@ -17,10 +18,14 @@
 #include "InputCommands.h"
 
 namespace vimcube::interface {
+
+    enum class AppMode { NORMAL, SEQUENCE, COMMAND };
+
     class VimCubeApp
     {
     private:
         int activeTab = 0;
+        AppMode appMode = AppMode::NORMAL;
         KeyBinding keyBinding;
         InputCommands inputCommands;
 
@@ -72,6 +77,9 @@ namespace vimcube::interface {
         void setHasAxisIndicator(const bool b);
         bool getHasGrid() const;
         void setHasGrid(const bool b);
+
+        AppMode getAppMode() const;
+        void setAppMode(AppMode mode);
 
         bool getIsFocusMode() const;
         void setFocusMode(const bool b);

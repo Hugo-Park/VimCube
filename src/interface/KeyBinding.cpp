@@ -45,14 +45,14 @@ namespace vimcube::interface {
     bool KeyBinding::runKeyBinding(ftxui::Event event)
     {
         // In sequence mode
-        if (this->mode == Mode::SEQUENCE)
+        if (this->app->getAppMode() == AppMode::SEQUENCE)
         {
             if (event == ftxui::Event::Escape)
             {
                 app->restoreSnapshot();
                 app->discardSnapshot();
                 this->sequenceBuffer.clear();
-                this->mode = Mode::NORMAL;
+                this->app->setAppMode(AppMode::NORMAL);
                 this->statusMessage.clear();
                 this->incomplete = false;
             }
@@ -62,7 +62,7 @@ namespace vimcube::interface {
                 app->discardSnapshot();
                 app->clearSelectGeo();
                 this->sequenceBuffer.clear();
-                this->mode = Mode::NORMAL;
+                this->app->setAppMode(AppMode::NORMAL);
                 this->statusMessage.clear();
                 this->incomplete = false;
             }
@@ -80,7 +80,7 @@ namespace vimcube::interface {
         }
 
         // In normal mode
-        else if (this->mode == Mode::NORMAL)
+        else if (this->app->getAppMode() == AppMode::NORMAL)
         {
             if (!event.is_character())
                 return false;
@@ -93,7 +93,7 @@ namespace vimcube::interface {
                 {
                     app->saveSnapshot();
                     this->sequenceBuffer.append(c);
-                    this->mode = Mode::SEQUENCE;
+                    this->app->setAppMode(AppMode::SEQUENCE);
                     updatePreview();
                     return true;
                 }
@@ -105,7 +105,7 @@ namespace vimcube::interface {
                 {
                     app->saveSnapshot();
                     this->sequenceBuffer.append(c);
-                    this->mode = Mode::SEQUENCE;
+                    this->app->setAppMode(AppMode::SEQUENCE);
                     updatePreview();
                     return true;
                 }
@@ -182,39 +182,6 @@ namespace vimcube::interface {
     const std::string& KeyBinding::getStatusMessage() const
     {
         return this->statusMessage;
-    }
-
-    /*
-        Function Name : getMode 
-        Parameters : -
-        Return Type : Mode
-        Description : Return mode
-    */
-    Mode KeyBinding::getMode() const
-    {
-        return this->mode;
-    }
-
-    /*
-        Function Name : isSequence 
-        Parameters : -
-        Return Type : bool
-        Description : Check isSequence
-    */
-    bool KeyBinding::isSequence() const
-    {
-        return (this->mode == Mode::SEQUENCE);
-    }
-
-    /*
-        Function Name : isNormal
-        Parameters : -
-        Return Type : bool
-        Description : Check isNormal
-    */
-    bool KeyBinding::isNormal() const
-    {
-        return (this->mode == Mode::NORMAL);
     }
 
     /*

@@ -156,9 +156,9 @@ namespace vimcube::interface {
         auto rightShell = Renderer(inputBox, [=] {
 
         return vbox({
-            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3),  // FOR SOMETHING
+            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),  // FOR SOMETHING
             separatorDashed(),
-            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3),  // FOR GEOMETRY INFO
+            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),  // FOR GEOMETRY INFO
             separatorDashed(),
             text(keyBinding.getStatusMessage()) | color(Color::Red) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
             (commandInput.empty() ? text(this->keyBinding.printKeyBuffer()) | bold | color(Color::Yellow1) : inputBox->Render()) | size(HEIGHT, EQUAL, 2)
@@ -224,7 +224,15 @@ namespace vimcube::interface {
                     })
                 });
             }
-            else return canvas(std::move(c)) | center | borderDashed;
+            else 
+                return vbox ({
+                    canvas(std::move(c)) | center | borderDashed,
+                    hbox ({
+                        text("STATUS BAR") | size(HEIGHT, EQUAL, 2),
+                        filler(),
+                        text(this->getCurrentMode()) | color(Color::LightGreenBis) | align_right | size(HEIGHT, EQUAL, 2)    // FOR MODE INFO
+                    })
+                });
         });
 
         // Render all layouts

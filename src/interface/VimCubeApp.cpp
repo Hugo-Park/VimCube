@@ -101,8 +101,8 @@ namespace vimcube::interface {
             int leftWidth = width * 0.8;
             int rightWidth = width * 0.2;
             return hbox ({
-                leftComponent->Render() | border | size(WIDTH, EQUAL, leftWidth) | flex,
-                rightMenu->Render() | border | size(WIDTH, EQUAL, rightWidth) | flex,
+                leftComponent->Render() | borderDashed | size(WIDTH, EQUAL, leftWidth) | flex,
+                rightMenu->Render() | borderDashed | size(WIDTH, EQUAL, rightWidth) | flex,
             }) | flex;
         });
 
@@ -143,25 +143,26 @@ namespace vimcube::interface {
         style.transform = [](InputState state) {
             Element e = state.element;
 
-            e |= color(Color::White);
-            e |= bgcolor(Color::Black);
+            e |= color(Color::LightGreenBis);
+            e |= bgcolor(Color::GrayDark);
             return e;
         };
+
+        style.insert = false; // for blinking block cursor
 
         // Create input box
         auto inputBox = Input(&commandInput, style);
 
         auto rightShell = Renderer(inputBox, [=] {
 
-            return vbox({
-                text(keyBinding.getStatusMessage()) | color(Color::Red),    // FOR ERROR TEST (DELETE LATER)
-                separator(),
-                vbox({
-                    inputBox->Render() | flex,
-                    // text(commandInput) | color(Color::Green) | flex,
-                    text(this->keyBinding.printKeyBuffer()) | color(Color::Yellow1)
-                }),
-            }) | border;
+        return vbox({
+            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3),  // FOR SOMETHING
+            separatorDashed(),
+            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3),  // FOR GEOMETRY INFO
+            separatorDashed(),
+            text(keyBinding.getStatusMessage()) | color(Color::Red) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
+            (commandInput.empty() ? text(this->keyBinding.printKeyBuffer()) | bold | color(Color::Yellow1) : inputBox->Render()) | size(HEIGHT, EQUAL, 2)
+            }) | borderDashed;
         });
 
         // Render right canvas
@@ -187,7 +188,7 @@ namespace vimcube::interface {
             // Draw Scene Geometries
             for (auto& obj : this->sceneGeos)
             {
-                vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color::Yellow : ftxui::Color::White);
+                vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color(ftxui::Color::Yellow3Bis) : ftxui::Color::White);
             }
 
             // Canvas for axis screen
@@ -200,12 +201,13 @@ namespace vimcube::interface {
                 // Set Camera for axis indicator
                 vimcube::camera::Camera axisCamera(vimcube::camera::ProjectionMode::ISOMETRIC, {0, 0, 0}, this->mainCamera.getUp(), this->mainCamera.getAzimuth(), this->mainCamera.getElevation(), 5.0f );
                 this->axisIndicator = vimcube::geo_factory::createAxisIndicator(8);
-                std::vector<ftxui::Color> axisColors = {ftxui::Color::Red, ftxui::Color::Blue, ftxui::Color::Green};
+                std::vector<ftxui::Color> axisColors = {ftxui::Color::Red3Bis, ftxui::Color::Blue3Bis, ftxui::Color::LightGreenBis};
                 vimcube::geo_draw::draw(m, axisCamera, this->axisIndicator, x, axisColors);    // Draw axis indicator
                 auto leftOffset = emptyElement() | size(WIDTH, EQUAL, 1);
                 auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);
 
-                return dbox({ canvas(std::move(c)) | center | border, 
+                return vbox ({
+                    dbox({ canvas(std::move(c)) | center | borderDashed, 
                         vbox({ filler(), 
                                 hbox({ leftOffset,
                                 canvas(std::move(x)) 
@@ -214,9 +216,15 @@ namespace vimcube::interface {
                                 | borderDashed | color(Color::GrayDark)}),
                                 bottomOffset
                         })
+                    }),
+                    hbox ({
+                        text("STATUS BAR") | size(HEIGHT, EQUAL, 2),
+                        filler(),
+                        text(this->getCurrentMode()) | color(Color::LightGreenBis) | align_right | size(HEIGHT, EQUAL, 2)    // FOR MODE INFO
+                    })
                 });
             }
-            else return canvas(std::move(c)) | center | border;
+            else return canvas(std::move(c)) | center | borderDashed;
         });
 
         // Render all layouts
@@ -617,5 +625,15 @@ namespace vimcube::interface {
             }
             mainCamera.updateCameraPosition();
         }
+    }
+
+    std::string VimCubeApp::getCurrentMode() const
+    {
+        if (this->isFocusMode)
+            return "--FOCUS--";
+        else if (this->keyBinding.getMode() == Mode::SEQUENCE)
+            return "--SEQUENCE--";
+        else
+            return "--NORMAL--";
     }
 }

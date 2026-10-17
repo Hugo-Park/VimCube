@@ -158,7 +158,10 @@ namespace vimcube::interface {
         */
         this->insertItemToMap("d", [&](const std::vector<std::string>& args) { 
 
-            vimCube.removeGeoFromScene(vimCube.getSelectedGeo()->getId());
+            if (vimCube.getSelectedGeo() != nullptr)
+            {
+                vimCube.removeGeoFromScene(vimCube.getSelectedGeo()->getId());
+            }
         });
         
         /*

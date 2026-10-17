@@ -1,6 +1,5 @@
 #ifndef VIMCUBE_APP_H
 #define VIMCUBE_APP_H
-#include <cstdint>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/dom/elements.hpp>
@@ -8,6 +7,7 @@
 #include <ftxui/dom/canvas.hpp>
 #include <ftxui/screen/terminal.hpp>
 #include <vector>
+#include <cstdint>
 #include "../geometry/SceneGeometry.h"
 #include "../geometry/GeoFactory.h"
 #include "../render/GeoDraw.h"
@@ -76,6 +76,7 @@ namespace vimcube::interface {
         bool getIsFocusMode() const;
         void setFocusMode(const bool b);
         void focusOnSelected();
+        std::string getCurrentMode() const;
     };
 }
 #endif

@@ -26,6 +26,13 @@ namespace vimcube::geo_factory {
 
         return lines;
     }
+    
+    /*
+        Function Name : createGridIndicator
+        Parameters : int size
+        Return Type : std::vector<vimcube::geometry::Line3d>
+        Description : Create an grid indicator
+    */
     std::vector<vimcube::geometry::Line3d> createGridIndicator(int size)
     {
         std::vector<vimcube::geometry::Line3d> lines;

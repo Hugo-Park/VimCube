@@ -1,8 +1,8 @@
 #include "KeyBinding.h"
+#include "VimCubeApp.h"
 #include <cctype>
 #include <ftxui/component/event.hpp>
 #include "../command/CommandParser.h"
-#include "CommandExecutor.h"
 #include "SequenceRunner.h"
 
 namespace vimcube::interface {

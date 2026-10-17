@@ -4,10 +4,9 @@
 #include <string>
 #include <functional>
 #include <ftxui/component/event.hpp>
-#include "SequenceRunner.h"
-#include "VimCubeApp.h"
 
 namespace vimcube::interface {
+    class VimCubeApp;
 
     enum class Mode { NORMAL, SEQUENCE };
 

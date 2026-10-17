@@ -2,9 +2,9 @@
 #define SEQUENCE_RUNNER_H
 
 #include <string>
-#include "VimCubeApp.h"
 
 namespace vimcube::interface {
+    class VimCubeApp;
 
     struct RunnerResult
     {

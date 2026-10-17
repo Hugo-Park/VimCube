@@ -1,5 +1,5 @@
 #include "InputCommands.h"
-#include "../geometry/GeoFactory.h"
+#include "VimCubeApp.h"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -48,6 +48,7 @@ namespace vimcube::interface {
         std::vector<std::string> args;
 
         ss >> command;
+        this->commandBuffer = command;
 
         std::string token;
         while (ss >> token) {
@@ -63,26 +64,25 @@ namespace vimcube::interface {
         return false;
     }
 
+    std::string InputCommands::printCommandBuffer()
+    {
+        return this->commandBuffer;
+    }
+
     /*
         Function Name : setPredefinedCommands
         Parameters : VimCubeApp& vimCube, std::vector<std::string>& commandHistory
         Return Type : void
         Description : Set dictonary to predefined commands. Edit this function to add new commands(dev).
     */
-    void InputCommands::setPredefinedCommands(VimCubeApp& vimCube, std::vector<std::string>& commandHistory)
+    void InputCommands::setPredefinedCommands(VimCubeApp& vimCube)
     {
         /*
             Syntax: q
             Description : Return to title screen
         */
-        this->insertItemToMap("q", [&](const std::vector<std::string>& args) { commandHistory.clear(); vimCube.setActiveTab(0); });
+        this->insertItemToMap("q", [&](const std::vector<std::string>& args) { vimCube.setActiveTab(0); });
 
-        /*
-            Syntax: clear
-            Description : Clear command history
-        */
-        this->insertItemToMap("clear", [&](const std::vector<std::string>& args) { commandHistory.clear(); });
-        
         /*
             Syntax: s <id>
             Description : Select geometry by id

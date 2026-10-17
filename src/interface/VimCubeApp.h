@@ -13,12 +13,16 @@
 #include "../render/GeoDraw.h"
 #include "../render/Camera.h"
 #include "../utility/Math.h"
+#include "KeyBinding.h"
+#include "InputCommands.h"
 
 namespace vimcube::interface {
     class VimCubeApp
     {
     private:
         int activeTab = 0;
+        KeyBinding keyBinding;
+        InputCommands inputCommands;
 
         std::vector<vimcube::geometry::Line3d> axisIndicator;
         std::vector<vimcube::geometry::Line3d> gridIndicator;

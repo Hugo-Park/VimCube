@@ -1,6 +1,8 @@
 #include "VimCubeApp.h"
 #include <cstdint>
 #include <algorithm>
+#include <ftxui/component/component_options.hpp>
+#include <ftxui/component/event.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
 #include <ftxui/screen/terminal.hpp>
@@ -15,7 +17,11 @@ namespace vimcube::interface {
         Return Type : -
         Description : Constructor for VimCubeApp object
     */
-    VimCubeApp::VimCubeApp() {};
+    VimCubeApp::VimCubeApp()
+    {
+        this->keyBinding.setPreDefinedKeyBinding(*this);
+        this->inputCommands.setPredefinedCommands(*this);
+    }
 
     /*
         Function Name : getCamera
@@ -40,7 +46,7 @@ namespace vimcube::interface {
     }
     /*
         Function Name : createTitleScreen
-        Parameters : int* activeTab, ftxui::ScreenInteractive& screen
+        Parameters : ftxui::ScreenInteractive& screen
         Return Type : ftxui::Component
         Description : Create title screen by rendering menu(left) and title(right)
     */
@@ -49,8 +55,8 @@ namespace vimcube::interface {
         using namespace ftxui;
 
         static std::vector<std::string> entries {
-            "New File",
-            "Open File",
+            "New File(n)",
+            "Open File(o)",
             "Quit(q)"
         };
         static int selected = 0;
@@ -92,8 +98,8 @@ namespace vimcube::interface {
         auto finalLayout = Renderer(rightMenu, [=] {
             int width = ftxui::Terminal::Size().dimx;
 
-            int leftWidth = width * 0.6;
-            int rightWidth = width * 0.4;
+            int leftWidth = width * 0.8;
+            int rightWidth = width * 0.2;
             return hbox ({
                 leftComponent->Render() | border | size(WIDTH, EQUAL, leftWidth) | flex,
                 rightMenu->Render() | border | size(WIDTH, EQUAL, rightWidth) | flex,
@@ -105,6 +111,14 @@ namespace vimcube::interface {
             if (event == Event::Character('q') || event == Event::Escape) {
                 screen.Exit();
                 return true;
+            }
+            else if (event == Event::Character('n'))
+            {
+                this->activeTab = 1;
+            }
+            else if (event == Event::Character('o'))
+            {
+                this->activeTab = 1;
             }
             return false;
         });
@@ -123,52 +137,29 @@ namespace vimcube::interface {
         using namespace ftxui;
 
         static std::string commandInput = "";
-        static std::vector<std::string> commandHistory;
 
-        // set KeyBinding object
-        static KeyBinding keyBinding;
-        static bool isKeyBindingSet = false;
-        if (!isKeyBindingSet)
-        {
-            keyBinding.setPreDefinedKeyBinding(*(this));
-            isKeyBindingSet = true;
-        }
+        InputOption style = InputOption::Default();
+
+        style.transform = [](InputState state) {
+            Element e = state.element;
+
+            e |= color(Color::White);
+            e |= bgcolor(Color::Black);
+            return e;
+        };
 
         // Create input box
-        auto inputBox = Input(&commandInput, "...");
+        auto inputBox = Input(&commandInput, style);
 
         auto rightShell = Renderer(inputBox, [=] {
-            Elements historyElements;
-
-            if (commandHistory.empty()) {
-                historyElements.push_back(text("Press colon(:)...") | dim);
-            }
-
-            // Log auto-scrolling
-            int maxLogs = ftxui::Terminal::Size().dimy - 6;
-            if (maxLogs < 1) maxLogs = 1;
-
-            int startIdx = 0;
-            if (commandHistory.size() > maxLogs) {
-                startIdx = commandHistory.size() - maxLogs;
-            }
-
-            for (size_t i = startIdx; i < commandHistory.size(); ++i) {
-                historyElements.push_back(text(commandHistory[i]));
-            }
-
-            historyElements.push_back(filler());
 
             return vbox({
-                text("Command Window") | bold | center,
-                separator(),
-                vbox(std::move(historyElements)) | flex,
                 text(keyBinding.getStatusMessage()) | color(Color::Red),    // FOR ERROR TEST (DELETE LATER)
                 separator(),
-                hbox({
-                    text("$") | bold,
+                vbox({
                     inputBox->Render() | flex,
-                    text(keyBinding.printKeyBuffer()) | bold | center | size(WIDTH, EQUAL, 10) | color(Color::Yellow1)
+                    // text(commandInput) | color(Color::Green) | flex,
+                    text(this->keyBinding.printKeyBuffer()) | color(Color::Yellow1)
                 }),
             }) | border;
         });
@@ -178,8 +169,8 @@ namespace vimcube::interface {
             // Calculate canvas size everytime
             auto terminalSize = ftxui::Terminal::Size();
 
-            int canvasWidth = terminalSize.dimx * 0.6 * 2;
-            int canvasHeight = (terminalSize.dimy - 4) * 4;
+            int canvasWidth = terminalSize.dimx * 0.8 * 2;
+            int canvasHeight = (terminalSize.dimy - 2) * 4;
 
             auto c = ftxui::Canvas(canvasWidth, canvasHeight);
             
@@ -220,10 +211,10 @@ namespace vimcube::interface {
                                 canvas(std::move(x)) 
                                 | size(WIDTH, EQUAL, terminalSize.dimx * 0.15 / 2) 
                                 | size(HEIGHT, EQUAL, terminalSize.dimx * 0.15 / 4) 
-                                | borderDashed }),
+                                | borderDashed | color(Color::GrayDark)}),
                                 bottomOffset
-                            })
-                        });
+                        })
+                });
             }
             else return canvas(std::move(c)) | center | border;
         });
@@ -232,8 +223,8 @@ namespace vimcube::interface {
         auto mainLayout = Renderer(rightShell, [=] {
             int width = ftxui::Terminal::Size().dimx;
 
-            int leftWidth = width * 0.6;
-            int rightWidth = width * 0.4;
+            int leftWidth = width * 0.8;
+            int rightWidth = width * 0.2;
 
             return hbox({
                 leftViewport->Render() | size(WIDTH, EQUAL, leftWidth) | flex,
@@ -242,7 +233,7 @@ namespace vimcube::interface {
         });
 
         // return CatchEvent()
-        return CatchEvent(mainLayout, [=, &screen](Event event) {
+        return CatchEvent(mainLayout, [this](Event event) {
             
             if (keyBinding.isSequence())
             {
@@ -256,14 +247,10 @@ namespace vimcube::interface {
                 
                 if (commandInput[0] == ':')
                 {
-                    InputCommands binding;  // construct InputCommands class
-                    binding.setPredefinedCommands(*(this), commandHistory);
-                    commandHistory.push_back(commandInput);
-                    binding.runCommand(commandInput); // run predifined command
+                    inputCommands.runCommand(commandInput); // run predifined command
                 }
 
                 commandInput.clear();
-                screen.Post(Event::Custom);
                 return true;
             }
             

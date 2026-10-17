@@ -1,4 +1,5 @@
 #include "SequenceRunner.h"
+#include "VimCubeApp.h"
 #include <string>
 #include "../command/CommandParser.h"
 #include "CommandExecutor.h"

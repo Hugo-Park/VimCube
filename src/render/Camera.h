@@ -16,6 +16,7 @@ namespace vimcube::camera {
         static constexpr float INIT_AZIMUTH = PI / 4.0f;
         static constexpr float INIT_ELEVATION = 0.9553;
         static constexpr float INIT_RADIUS = 20.0f;
+        static constexpr float INIT_ZOOM = 0.05f;
 
         // Projection Mode
         vimcube::camera::ProjectionMode projectionMode_ = vimcube::camera::ProjectionMode::ISOMETRIC;

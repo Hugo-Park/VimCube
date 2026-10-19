@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <vector>
 #include <cmath>
-#include "../utility/Utils.h"
 
 namespace vimcube::geometry {
 
@@ -133,11 +132,9 @@ namespace vimcube::geometry {
     struct Vertex {
         Point3d position;
         Vector3d normal;
-        vimcube::utility::Color color;
 
-        Vertex(const Point3d& position) : position(position), normal(Vector3d(0.0f, 0.0f, 0.0f)), color(255, 255, 255, 1.0f) {};
-        Vertex(const Point3d& position, const Vector3d& normal) : position(position), normal(normal), color(255, 255, 255, 1.0f) {};
-        Vertex(const Point3d& position, const Vector3d& normal, const vimcube::utility::Color& color) : position(position), normal(normal), color(color) {};
+        Vertex(const Point3d& position) : position(position), normal(Vector3d(0.0f, 0.0f, 0.0f)) {};
+        Vertex(const Point3d& position, const Vector3d& normal) : position(position), normal(normal) {};
     };
 
     /*

@@ -1,5 +1,6 @@
 #ifndef MESH_H
 #define MESH_H
+#include <sys/types.h>
 #include <vector>
 #include <cstdint>
 #include <set>
@@ -30,6 +31,8 @@ namespace vimcube::geometry {
 
         vimcube::geometry::BoundingBox3d computeBoundingBox(const vimcube::math::Matrix4by4& modelMatrix) const;
         float getMaxDistanceFromCenter(const vimcube::geometry::BoundingBox3d& bbox, const vimcube::math::Matrix4by4& modelMatrix) const;
+
+        float computeFileSize() const;
     };
 }
 #endif

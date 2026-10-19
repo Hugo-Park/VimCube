@@ -111,4 +111,9 @@ namespace vimcube::geometry {
         }
         return maxDistance;
     }
+
+    float Mesh::computeFileSize() const
+    {
+        return this->vertices_.size() * 12 + this->faces_.size() * 12 + this->edges_.size() * 8;
+    }
 }

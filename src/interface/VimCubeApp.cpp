@@ -1,12 +1,14 @@
 #include "VimCubeApp.h"
 #include <cstdint>
 #include <algorithm>
+#include <iomanip>
+#include <string>
+#include <vector>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/event.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
 #include <ftxui/screen/terminal.hpp>
-#include <vector>
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
 
@@ -152,14 +154,47 @@ namespace vimcube::interface {
 
         // Create input box
         auto inputBox = Input(&commandInput, style);
-
         auto rightShell = Renderer(inputBox, [=] {
 
+        // Compute file size
+        std::string fileSizeStr = "0.0B";
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2);
+        if (this->getSelectedGeo() != nullptr)
+        {
+            float meshSize = this->getSelectedGeo()->getMesh().computeFileSize();
+            if (meshSize >= 1024.0f)
+            {
+                ss << (meshSize * 0.001f) << " KB";
+            }
+            else
+            {
+                ss << meshSize << " B";
+            }
+
+        }
+        else ss << 0.0 << "B";
+        fileSizeStr = ss.str();
+
         return vbox({
-            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),  // FOR SOMETHING
+            // First Box
+            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
             separatorDashed(),
-            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),  // FOR GEOMETRY INFO
+
+            // Second Box
+            (this->getSelectedGeo() == nullptr ? 
+            text("No Selected Geometry") | color(ftxui::Color::GrayDark) :
+            vbox ({
+                text("Geo ID: " + std::to_string(this->getSelectedGeo()->getId())),
+                text("Vertices: " + std::to_string(this->getSelectedGeo()->getMesh().getVertices().size())),
+                text("Edges: " + std::to_string(this->getSelectedGeo()->getMesh().getEdges().size())),
+                text("Faces: " + std::to_string(this->getSelectedGeo()->getMesh().getFaces().size())),
+                text("File Size: " + fileSizeStr)
+            })
+            ) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
             separatorDashed(),
+
+            // Third box
             text(keyBinding.getStatusMessage()) | color(Color::Red) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
             (commandInput.empty() ? text(this->keyBinding.printKeyBuffer()) | bold | color(Color::Yellow1) : inputBox->Render()) | size(HEIGHT, EQUAL, 2)
             }) | borderDashed;

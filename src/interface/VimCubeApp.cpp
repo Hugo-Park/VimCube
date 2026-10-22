@@ -57,9 +57,9 @@ namespace vimcube::interface {
         using namespace ftxui;
 
         static std::vector<std::string> entries {
-            "New File(n)",
-            "Open File(o)",
-            "Quit(q)"
+            "(N)ew File",
+            "(O)pen File",
+            "(Q)uit"
         };
         static int selected = 0;
 
@@ -110,15 +110,16 @@ namespace vimcube::interface {
 
         // Keyboard event handling
         auto componentWithEvents = CatchEvent(finalLayout, [&](Event event) {
-            if (event == Event::Character('q') || event == Event::Escape) {
+            if (event == Event::Character('q')  || event == Event::Character('Q') || event == Event::Escape)
+            {
                 screen.Exit();
                 return true;
             }
-            else if (event == Event::Character('n'))
+            else if (event == Event::Character('n') || event == Event::Character('N'))
             {
                 this->activeTab = 1;
             }
-            else if (event == Event::Character('o'))
+            else if (event == Event::Character('o') || event == Event::Character('O'))
             {
                 this->activeTab = 1;
             }
@@ -731,12 +732,32 @@ namespace vimcube::interface {
     std::string VimCubeApp::getCurrentMode() const
     {
         if (this->appMode == AppMode::COMMAND)
-            return "--COMMAND--";
+            return "-- COMMAND --";
         else if (this->appMode == AppMode::SEQUENCE)
-            return "--SEQUENCE--";
+            return "-- SEQUENCE --";
         else if (this->isFocusMode)
-            return "--FOCUS--";
+            return "-- FOCUS --";
         else
-            return "--NORMAL--";
+            return "-- NORMAL --";
+    }
+
+    /*
+        Function Name : resetApp
+        Parameters : -
+        Return Type : -
+        Description : Reset app
+    */
+    void VimCubeApp::resetApp()
+    {
+        this->appMode = AppMode::NORMAL;
+        this->hasAxisIndicator = true;
+        this->hasGrid = true;
+        this->sceneGeos.clear();
+        this->nextId = 0;
+        this->mainCamera.resetCamera();
+        this->savedSceneGeos.clear();
+        this->savedId = 0;
+        this->hasSnapshot = false;
+        this->isFocusMode = false;
     }
 }

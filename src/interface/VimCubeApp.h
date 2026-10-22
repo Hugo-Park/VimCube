@@ -85,6 +85,8 @@ namespace vimcube::interface {
         void setFocusMode(const bool b);
         void focusOnSelected();
         std::string getCurrentMode() const;
+
+        void resetApp();
     };
 }
 #endif

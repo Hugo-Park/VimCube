@@ -57,6 +57,24 @@ namespace vimcube::interface {
                 this->incomplete = false;
             }
 
+            else if (event == ftxui::Event::Backspace)
+            {
+                if (this->sequenceBuffer.length() >= 2)
+                {
+                    this->sequenceBuffer.pop_back();
+                    updatePreview();
+                }
+                else if (this->sequenceBuffer.length() == 1)
+                {
+                    app->restoreSnapshot();
+                    app->discardSnapshot();
+                    this->sequenceBuffer.pop_back();
+                    this->app->setAppMode(AppMode::NORMAL);
+                    this->statusMessage.clear();
+                    this->incomplete = false;
+                }
+            }
+
             else if (event == ftxui::Event::Character(';'))
             {
                 app->discardSnapshot();

@@ -81,7 +81,7 @@ namespace vimcube::interface {
             Syntax: q
             Description : Return to title screen
         */
-        this->insertItemToMap("q", [&](const std::vector<std::string>& args) { vimCube.setActiveTab(0); });
+        this->insertItemToMap("q", [&](const std::vector<std::string>& args) { vimCube.setActiveTab(0); vimCube.resetApp(); });
 
         /*
             Syntax: s <id>

@@ -59,6 +59,7 @@ namespace vimcube::interface {
         static std::vector<std::string> entries {
             "(N)ew File",
             "(O)pen File",
+            "(B)uy Me a Coffee",
             "(Q)uit"
         };
         static int selected = 0;
@@ -79,6 +80,20 @@ namespace vimcube::interface {
             }
 
             else if (selected == 2)
+            {
+                #if defined(__APPLE__) && defined(__MACH__)
+                    std::system("open https://buymeacoffee.com/huyeong");
+                #elif defined(__linux__)
+                    std::system("xdg-open https://buymeacoffee.com/huyeong");
+                #elif defined(_WIN32) || defined(_WIN64)
+                    ShellExecuteA(NULL, "open", https://buymeacoffee.com/huyeong, NULL, NULL, SW_SHOWNORMAL);
+                #else
+                    return;
+                #endif
+                return;
+            }
+
+            else if (selected == 3)
             {
                 screen.Exit();
                 return;
@@ -122,6 +137,16 @@ namespace vimcube::interface {
             else if (event == Event::Character('o') || event == Event::Character('O'))
             {
                 this->activeTab = 1;
+            }
+            else if (event == Event::Character('b') || event == Event::Character('B'))
+            {
+                #if defined(__APPLE__) && defined(__MACH__)
+                    std::system("open https://buymeacoffee.com/huyeong");
+                #elif defined(__linux__)
+                    std::system("xdg-open https://buymeacoffee.com/huyeong");
+                #else
+                    return true;
+                #endif
             }
             return false;
         });

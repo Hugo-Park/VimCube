@@ -211,11 +211,12 @@ namespace vimcube::interface {
             (this->getSelectedGeo() == nullptr ? 
             text("No Selected Geometry") | color(ftxui::Color::GrayDark) :
             vbox ({
-                text("Geo ID: " + std::to_string(this->getSelectedGeo()->getId())),
-                text("Vertices: " + std::to_string(this->getSelectedGeo()->getMesh().getVertices().size())),
-                text("Edges: " + std::to_string(this->getSelectedGeo()->getMesh().getEdges().size())),
-                text("Faces: " + std::to_string(this->getSelectedGeo()->getMesh().getFaces().size())),
-                text("File Size: " + fileSizeStr)
+                paragraph("Geo ID: " + std::to_string(this->getSelectedGeo()->getId())),
+                paragraph("Vertices: " + std::to_string(this->getSelectedGeo()->getMesh().getVertices().size())),
+                paragraph("Edges: " + std::to_string(this->getSelectedGeo()->getMesh().getEdges().size())),
+                paragraph("Faces: " + std::to_string(this->getSelectedGeo()->getMesh().getFaces().size())),
+                paragraph("File Size: " + fileSizeStr),
+                paragraph("Gene Code: " + this->getSelectedGeo()->getSequenceRecord())
             })
             ) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
             separatorDashed(),

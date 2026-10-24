@@ -19,6 +19,7 @@ namespace vimcube::interface {
 
         std::string statusMessage;
         bool incomplete = false;
+        bool isConfirmable = false;
 
         void updatePreview();
         bool checkCharacter(const char c);

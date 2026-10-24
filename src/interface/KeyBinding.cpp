@@ -77,12 +77,19 @@ namespace vimcube::interface {
 
             else if (event == ftxui::Event::Character(';'))
             {
-                app->discardSnapshot();
-                app->clearSelectGeo();
-                this->sequenceBuffer.clear();
-                this->app->setAppMode(AppMode::NORMAL);
-                this->statusMessage.clear();
-                this->incomplete = false;
+                if (!this->isConfirmable)
+                    return true;
+                if (app->getSelectedGeo() != nullptr)
+                {
+                    app->getSelectedGeo()->appendSequenceRecord(this->sequenceBuffer);
+                    app->discardSnapshot();
+                    app->clearSelectGeo();
+                    this->sequenceBuffer.clear();
+                    this->app->setAppMode(AppMode::NORMAL);
+                    this->statusMessage.clear();
+                    this->incomplete = false;
+                }
+                else return true;
             }
 
             else if (event.is_character())
@@ -213,6 +220,7 @@ namespace vimcube::interface {
         vimcube::interface::RunnerResult r = vimcube::interface::previewSequence(*app, this->sequenceBuffer);
         this->statusMessage = r.errorMsg;
         this->incomplete = r.incomplete;
+        this->isConfirmable = r.ok;
     }
 
     /*

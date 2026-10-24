@@ -76,6 +76,28 @@ namespace vimcube::geometry {
     }
 
     /*
+        Function Name : getSequenceRecord
+        Parameters : -
+        Return Type : const std::string&
+        Description : Return sequenceRecord
+    */
+    const std::string& SceneGeometry::getSequenceRecord() const
+    {
+        return this->sequenceRecord_;
+    }
+
+    /*
+        Function Name : appendSequenceRecord
+        Parameters : std::string& str
+        Return Type : void
+        Description : Append string to sequenceRecord
+    */
+    void SceneGeometry::appendSequenceRecord(const std::string& str)
+    {
+        this->sequenceRecord_.append(str);
+    }
+
+    /*
         Function Name : setIsSelected
         Parameters : bool state
         Return Type : void

@@ -9,8 +9,11 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
 #include <ftxui/screen/terminal.hpp>
+#include "../geometry/GeoFactory.h"
+#include "../render/GeoDraw.h"
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
+#include "../utility/Math.h"
 
 namespace vimcube::interface {
     /*
@@ -164,7 +167,7 @@ namespace vimcube::interface {
     {
         using namespace ftxui;
 
-        static std::string commandInput = "";
+        // static std::string commandInput = "";
 
         InputOption style = InputOption::Default();
 
@@ -248,7 +251,7 @@ namespace vimcube::interface {
             }
 
             // Draw Scene Geometries
-            for (auto& obj : this->sceneGeos)
+            for (auto& obj : this->scene.sceneGeos)
             {
                 vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color(ftxui::Color::Yellow3Bis) : ftxui::Color::White);
             }
@@ -408,8 +411,8 @@ namespace vimcube::interface {
     */
     uint32_t VimCubeApp::addGeoToScene(const vimcube::geometry::Mesh& mesh)
     {
-        uint32_t tempId = this->nextId;
-        sceneGeos.emplace_back(vimcube::geometry::SceneGeometry(this->nextId++, mesh));
+        uint32_t tempId = this->scene.nextId;
+        this->scene.sceneGeos.emplace_back(vimcube::geometry::SceneGeometry(this->scene.nextId++, mesh));
         return tempId;
     }
 
@@ -421,9 +424,9 @@ namespace vimcube::interface {
     */
     void VimCubeApp::removeGeoFromScene(uint32_t id)
     {
-        auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getId() == id; });
-        if (it == sceneGeos.end()) return;
-        sceneGeos.erase(it);
+        auto it = std::find_if(this->scene.sceneGeos.begin(), this->scene.sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getId() == id; });
+        if (it == this->scene.sceneGeos.end()) return;
+        this->scene.sceneGeos.erase(it);
     }
 
     /*
@@ -434,7 +437,7 @@ namespace vimcube::interface {
     */
     void VimCubeApp::removeAllGeoFromScene()
     {
-        this->sceneGeos.clear();
+        this->scene.sceneGeos.clear();
     }
 
     /*
@@ -447,7 +450,7 @@ namespace vimcube::interface {
     {
         // moveCamera is true when user selects geometry, not automatically
         bool found = false;
-        for (auto& obj : sceneGeos)
+        for (auto& obj : this->scene.sceneGeos)
         {
             if (obj.getId() == id)
             {
@@ -457,7 +460,7 @@ namespace vimcube::interface {
         }
 
         if (!found) return false;
-        for (auto& obj : sceneGeos)
+        for (auto& obj : this->scene.sceneGeos)
         {
             if (obj.getId() == id)
             {
@@ -484,16 +487,16 @@ namespace vimcube::interface {
     */
     bool VimCubeApp::selectNextGeo()
     {
-        if (this->sceneGeos.empty()) return false;
-        auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
-        if (it == sceneGeos.end())
+        if (this->scene.sceneGeos.empty()) return false;
+        auto it = std::find_if(this->scene.sceneGeos.begin(), this->scene.sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
+        if (it == this->scene.sceneGeos.end())
         {
-            selectGeo(sceneGeos.begin()->getId(), true);
+            selectGeo(this->scene.sceneGeos.begin()->getId(), true);
             return true;
         }
-        size_t idx = std::distance(sceneGeos.begin(), it);
-        size_t nextIdx = (idx + 1) % sceneGeos.size();
-        selectGeo(sceneGeos[nextIdx].getId(), true);
+        size_t idx = std::distance(this->scene.sceneGeos.begin(), it);
+        size_t nextIdx = (idx + 1) % this->scene.sceneGeos.size();
+        selectGeo(this->scene.sceneGeos[nextIdx].getId(), true);
 
         return true;
     }
@@ -506,16 +509,16 @@ namespace vimcube::interface {
     */
     bool VimCubeApp::selectPrevGeo()
     {
-        if (this->sceneGeos.empty()) return false;
-        auto it = std::find_if(sceneGeos.begin(), sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
-        if (it == sceneGeos.end())
+        if (this->scene.sceneGeos.empty()) return false;
+        auto it = std::find_if(this->scene.sceneGeos.begin(), this->scene.sceneGeos.end(), [&](const vimcube::geometry::SceneGeometry& geo) { return geo.getIsSelected() == true; });
+        if (it == this->scene.sceneGeos.end())
         {
-            selectGeo(sceneGeos.back().getId(), true);
+            selectGeo(this->scene.sceneGeos.back().getId(), true);
             return true;
         }
-        size_t idx = std::distance(sceneGeos.begin(), it);
-        size_t nextIdx = (idx + sceneGeos.size() - 1) % sceneGeos.size();
-        selectGeo(sceneGeos[nextIdx].getId(), true);
+        size_t idx = std::distance(this->scene.sceneGeos.begin(), it);
+        size_t nextIdx = (idx + this->scene.sceneGeos.size() - 1) % this->scene.sceneGeos.size();
+        selectGeo(this->scene.sceneGeos[nextIdx].getId(), true);
 
         return true;
     }
@@ -528,7 +531,7 @@ namespace vimcube::interface {
     */
     void VimCubeApp::deselectGeo(uint32_t id)
     {
-        for (auto& obj : sceneGeos)
+        for (auto& obj : this->scene.sceneGeos)
         {
             if (obj.getId() == id)
             {
@@ -545,7 +548,7 @@ namespace vimcube::interface {
     */
     void VimCubeApp::deselectGeo()
     {
-        for (auto& obj : sceneGeos)
+        for (auto& obj : this->scene.sceneGeos)
         {
             if (obj.getIsSelected())
             {
@@ -562,7 +565,7 @@ namespace vimcube::interface {
     */
     void VimCubeApp::clearSelectGeo()
     {
-        for (auto& obj : sceneGeos)
+        for (auto& obj : this->scene.sceneGeos)
         {
             obj.setIsSelected(false);
         }
@@ -576,7 +579,7 @@ namespace vimcube::interface {
     */
     vimcube::geometry::SceneGeometry* VimCubeApp::getSelectedGeo()
     {
-        for (auto& obj : sceneGeos)
+        for (auto& obj : this->scene.sceneGeos)
         {
             if (obj.getIsSelected())
                 return &obj;
@@ -592,9 +595,7 @@ namespace vimcube::interface {
     */
     void VimCubeApp::saveSnapshot()
     {
-        this->savedSceneGeos = this->sceneGeos;
-        this->savedId = this->nextId;
-        this->hasSnapshot = true;
+        this->savedScene = this->scene;
     }
 
     /*
@@ -605,10 +606,9 @@ namespace vimcube::interface {
     */
     void VimCubeApp::restoreSnapshot()
     {
-        if (hasSnapshot)
+        if (this->savedScene.has_value())
         {
-            this->sceneGeos = this->savedSceneGeos;
-            this->nextId = this->savedId;
+            this->scene = this->savedScene.value();
         }
     }
 
@@ -620,8 +620,7 @@ namespace vimcube::interface {
     */
     void VimCubeApp::discardSnapshot()
     {
-        this->hasSnapshot = false;
-        this->savedSceneGeos.clear();
+        this->savedScene.reset();
     }
 
     /*
@@ -768,9 +767,20 @@ namespace vimcube::interface {
     }
 
     /*
+        Function Name : setNextId
+        Parameters : uint32_t id
+        Return Type : void
+        Description : Set next id of Scene
+    */
+    void VimCubeApp::setNextId(uint32_t id)
+    {
+        this->scene.nextId = id;
+    }
+
+    /*
         Function Name : resetApp
         Parameters : -
-        Return Type : -
+        Return Type : void
         Description : Reset app
     */
     void VimCubeApp::resetApp()
@@ -778,12 +788,12 @@ namespace vimcube::interface {
         this->appMode = AppMode::NORMAL;
         this->hasAxisIndicator = true;
         this->hasGrid = true;
-        this->sceneGeos.clear();
-        this->nextId = 0;
+        this->scene = {};
         this->mainCamera.resetCamera();
-        this->savedSceneGeos.clear();
-        this->savedId = 0;
-        this->hasSnapshot = false;
+        this->savedScene = {};
         this->isFocusMode = false;
+        this->keyBinding.reset();
+        this->inputCommands.reset();
+        this->commandInput.clear();
     }
 }

@@ -9,11 +9,10 @@
 #include <ftxui/screen/terminal.hpp>
 #include <vector>
 #include <cstdint>
+#include <optional>
 #include "../geometry/SceneGeometry.h"
-#include "../geometry/GeoFactory.h"
-#include "../render/GeoDraw.h"
+#include "../geometry/Scene.h"
 #include "../render/Camera.h"
-#include "../utility/Math.h"
 #include "KeyBinding.h"
 #include "InputCommands.h"
 
@@ -28,14 +27,15 @@ namespace vimcube::interface {
         AppMode appMode = AppMode::NORMAL;
         KeyBinding keyBinding;
         InputCommands inputCommands;
+        std::string commandInput;
 
         std::vector<vimcube::geometry::Line3d> axisIndicator;
         std::vector<vimcube::geometry::Line3d> gridIndicator;
         bool hasAxisIndicator = true;
         bool hasGrid = true;
 
-        std::vector<vimcube::geometry::SceneGeometry> sceneGeos;
-        uint32_t nextId = 0;
+        vimcube::geometry::Scene scene;
+        std::optional<vimcube::geometry::Scene> savedScene;
 
         vimcube::camera::Camera mainCamera{
             vimcube::camera::ProjectionMode::ISOMETRIC,
@@ -43,12 +43,9 @@ namespace vimcube::interface {
             { 0.0f, 0.0f, 1.0f }, 0.05f
         }; // This Camera object will exist until the program ends
 
-        // For snapshot features
-        std::vector<vimcube::geometry::SceneGeometry> savedSceneGeos;
-        uint32_t savedId = 0;
-        bool hasSnapshot = false;
-
         bool isFocusMode = false;
+
+        std::string filePath;
 
     public:
         VimCubeApp();
@@ -85,6 +82,8 @@ namespace vimcube::interface {
         void setFocusMode(const bool b);
         void focusOnSelected();
         std::string getCurrentMode() const;
+
+        void setNextId(uint32_t id);
 
         void resetApp();
     };

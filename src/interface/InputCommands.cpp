@@ -212,4 +212,15 @@ namespace vimcube::interface {
             vimCube.getCamera().resetCamera();
         });
     }
+
+    /*
+        Function Name : reset
+        Parameters : -
+        Return Type : void
+        Description : Reset commandBuffer
+    */
+    void InputCommands::reset()
+    {
+        this->commandBuffer.clear();
+    }
 }

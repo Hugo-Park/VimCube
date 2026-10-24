@@ -210,6 +210,20 @@ namespace vimcube::interface {
     }
 
     /*
+        Function Name : reset
+        Parameters : -
+        Return Type : void
+        Description : Reset member variables
+    */
+    void KeyBinding::reset()
+    {
+        this->sequenceBuffer.clear();
+        this->statusMessage.clear();
+        this->incomplete = false;
+        this->isConfirmable = false;
+    }
+
+    /*
         Function Name : updatePreview 
         Parameters : -
         Return Type : void

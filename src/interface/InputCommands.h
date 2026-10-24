@@ -21,6 +21,8 @@ namespace vimcube::interface {
         bool runCommand(std::string str);
         std::string printCommandBuffer();
         void setPredefinedCommands(VimCubeApp& vimCube);
+
+        void reset();
     };
 }
 #endif

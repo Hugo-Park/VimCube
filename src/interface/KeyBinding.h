@@ -33,6 +33,8 @@ namespace vimcube::interface {
         void setPreDefinedKeyBinding(VimCubeApp& vimCube);
 
         const std::string& getStatusMessage() const;
+
+        void reset();
     };
 }
 #endif

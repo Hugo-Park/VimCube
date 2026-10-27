@@ -1,4 +1,5 @@
 #include "CommandExecutor.h"
+#include "../geometry/GeoFactory.h"
 #include <cstdint>
 
 namespace vimcube::command_executor {

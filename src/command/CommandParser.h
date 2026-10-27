@@ -23,6 +23,8 @@ namespace vimcube::command {
     ParseResult parse(const std::string& input);
 
     VerbType classifyVerbStart(const char c);
+    bool getIsAxisNeeded(const vimcube::command::Op op);
+    bool getIsValueNeeded(const vimcube::command::Op op);
 }
 
 #endif

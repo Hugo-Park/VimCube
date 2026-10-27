@@ -246,4 +246,36 @@ namespace vimcube::command {
         }
         return VerbType::NONE;
     }
+
+    /*
+        Function Name : getIsAxisNeeded
+        Parameters : const vimcube::command::Op op
+        Return Type : bool
+        Description : Check if axis needed
+    */
+    bool getIsAxisNeeded(const vimcube::command::Op op)
+    {
+        auto it = std::find_if(verbTable.begin(), verbTable.end(), [op](const Verb& v){ return v.op == op; });
+        if (it != verbTable.end())
+        {
+            return it->needsAxis;
+        }
+        return false;
+    }
+
+    /*
+        Function Name : getIsValueNeeded
+        Parameters : const vimcube::command::Op op
+        Return Type : bool
+        Description : Check if value needed
+    */
+    bool getIsValueNeeded(const vimcube::command::Op op)
+    {
+        auto it = std::find_if(verbTable.begin(), verbTable.end(), [op](const Verb& v){ return v.op == op; });
+        if (it != verbTable.end())
+        {
+            return it->needsValue;
+        }
+        return false;
+    }
 }

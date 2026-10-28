@@ -14,6 +14,7 @@
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
 #include "../utility/Math.h"
+#include "SequenceRunner.h"
 
 namespace vimcube::interface {
     /*
@@ -787,16 +788,72 @@ namespace vimcube::interface {
         this->scene.nextId = id;
     }
 
+    /*
+        Function Name : getFileManager
+        Parameters : -
+        Return Type : vimcube::file::FileManager&
+        Description : Get fileManager
+    */
     vimcube::file::FileManager& VimCubeApp::getFileManager()
     {
         return this->fileManager;
     }
 
+    /*
+        Function Name : applyLoadedGeometries
+        Parameters : const std::vector<vimcube::file::GeometryRecord>& records
+        Return Type : RunnerResult
+        Description : Load and create geometries from JSON file records
+    */
+    RunnerResult VimCubeApp::applyLoadedGeometries(const std::vector<vimcube::file::GeometryRecord>& records)
+    {
+        size_t i = 0;
+        uint32_t maxId = 0;
+        if (records.size() == 0)
+        {
+            this->setNextId(0);
+            RunnerResult result;
+            result.ok = true;
+            return result;
+        }
+        for (const auto& r : records)
+        {
+            this->setNextId(r.id);
+            const std::string& sequenceRecord = r.sequenceRecord;
+            RunnerResult result = runSequence(*this, sequenceRecord);
+            if (!result.ok)
+            {
+                this->resetApp();
+                return result;
+            }
+            this->scene.sceneGeos.at(i).appendSequenceRecord(sequenceRecord);
+            this->clearSelectGeo();
+            maxId = std::max(maxId, r.id);
+            i++;
+        }
+        this->setNextId(maxId + 1);
+        RunnerResult result;
+        result.ok = true;
+        return result;
+    }
+
+    /*
+        Function Name : setAppMessage
+        Parameters : const std::string& msg
+        Return Type : void
+        Description : Set appMessage
+    */
     void VimCubeApp::setAppMessage(const std::string& msg)
     {
         this->appMessage = msg;
     }
 
+    /*
+        Function Name : getAppMessage
+        Parameters : -
+        Return Type : const std::string&
+        Description : Get appMessage
+    */
     const std::string& VimCubeApp::getAppMessage() const
     {
         return this->appMessage;

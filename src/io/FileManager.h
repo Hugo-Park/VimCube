@@ -12,6 +12,7 @@ namespace vimcube::file
     {
         uint32_t id = 0;
         std::string sequenceRecord;
+        GeometryRecord() = default;
     };
 
     struct SaveResult
@@ -40,7 +41,7 @@ namespace vimcube::file
         uint32_t getVersion() const;
 
         SaveResult writeFile(const std::string& path, const vimcube::geometry::Scene& scene);
-        LoadResult loadFile();
+        LoadResult loadFile(const std::string& path);
 
         void reset();
     };

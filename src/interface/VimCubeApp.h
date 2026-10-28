@@ -16,6 +16,7 @@
 #include "../io/FileManager.h"
 #include "KeyBinding.h"
 #include "InputCommands.h"
+#include "SequenceRunner.h"
 
 namespace vimcube::interface {
 
@@ -91,6 +92,8 @@ namespace vimcube::interface {
         void setNextId(uint32_t id);
 
         vimcube::file::FileManager& getFileManager();
+
+        RunnerResult applyLoadedGeometries(const std::vector<vimcube::file::GeometryRecord>& records);
 
         void setAppMessage(const std::string& msg);
         const std::string& getAppMessage() const;

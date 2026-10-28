@@ -1,9 +1,12 @@
 #include "FileManager.h"
+#include <set>
+#include <cstdint>
 #include <cstddef>
+#include <exception>
 #include <fstream>
+#include <limits>
 #include <nlohmann/json.hpp>
 #include "../command/CommandParser.h"
-#include "nlohmann/json_fwd.hpp"
 
 namespace vimcube::file
 {
@@ -92,10 +95,10 @@ namespace vimcube::file
     SaveResult FileManager::writeFile(const std::string& path, const vimcube::geometry::Scene& scene)
     {
         SaveResult result;
-        uint32_t currentVersion = this->version + 1;
+        uint32_t newVersion = this->version + 1;
 
         nlohmann::ordered_json j;
-        j["version"] = currentVersion;
+        j["version"] = newVersion;
 
         // geometries array
         nlohmann::ordered_json bigArr = nlohmann::ordered_json::array();
@@ -114,7 +117,7 @@ namespace vimcube::file
             {
                 if (parsed.commands.size() == 0)
                 {
-                    result.errMsg = std::string("Command does not exist") + "(ID : " + std::to_string(g.getId()) + ")";
+                    result.errMsg = std::string("JSON write error: no commands") + "(Geo ID : " + std::to_string(g.getId()) + ")";
                     return result;
                 }
                 for (size_t i = 0; i < parsed.commands.size(); i++)
@@ -137,7 +140,7 @@ namespace vimcube::file
             }
             else
             {
-                result.errMsg = std::string("Cannot parse commands") + "(ID : " + std::to_string(g.getId()) + ")";
+                result.errMsg = std::string("JSON write error: invalid commands ") + "(Geo ID : " + std::to_string(g.getId()) + ")";
                 return result;
             }
             bigArr.push_back(infoObj);
@@ -147,7 +150,7 @@ namespace vimcube::file
         std::ofstream fout(path);
         if(!fout.is_open())
         {
-            result.errMsg = "Cannot write a file";
+            result.errMsg = "JSON write error: cannot write a file";
             return result;
         }
         fout << j.dump(4);
@@ -155,18 +158,138 @@ namespace vimcube::file
         if (!fout.fail())
         {
             result.ok = true;
-            result.errMsg = "Successfully Saved";
+            result.errMsg = "Successfully saved to " + path;
             this->filePath = path;
-            this->version = currentVersion;
+            this->version = newVersion;
         }
         else
         {
-            result.errMsg = "File writing failed";
+            result.errMsg = "JSON write error: cannot write a file";
             return result;
         }
         return result;
     }
 
+    /*
+        Function Name : loadFile
+        Parameters : const std::string& path
+        Return Type : LoadResult
+        Description : Load JSON file
+    */
+    LoadResult FileManager::loadFile(const std::string& path)
+    {
+        LoadResult result;
+        std::ifstream fin(path);
+        if (!fin.is_open())
+        {
+            result.errMsg = "Cannot open a file";
+            return result;
+        }
+
+        try
+        {
+            nlohmann::ordered_json j = nlohmann::ordered_json::parse(fin);
+
+            if (!j.is_object())
+            {
+                result.errMsg = "JSON parse error: not an object";
+                return result;
+            }
+            if (!j.contains("version") || !j["version"].is_number_unsigned())
+            {
+                result.errMsg = "JSON parse error: invalid version";
+                return result;
+            }
+            if (j["version"].get<uint64_t>() > std::numeric_limits<uint32_t>::max())
+            {
+                result.errMsg = "JSON parse error: invalid version";
+                return result;
+            }
+            if (!j.contains("geometries") || !j["geometries"].is_array())
+            {
+                result.errMsg = "JSON parse error: invalid geometry records";
+                return result;
+            }
+
+            std::set<uint32_t> testIdSet;
+            for (const auto& g : j["geometries"])
+            {
+                if (!g.is_object())
+                {
+                    result.errMsg = "JSON parse error: not an object";
+                    return result;
+                }
+                if (!g.contains("id"))
+                {
+                    result.errMsg = "JSON parse error: invalid ID";
+                    return result;
+                }
+                if (!g["id"].is_number_unsigned())
+                {
+                    result.errMsg = "JSON parse error: invalid ID";
+                    return result;
+                }
+                if (g["id"].get<uint64_t>() > std::numeric_limits<uint32_t>::max())
+                {
+                    result.errMsg = "JSON parse error: invalid ID";
+                    return result;
+                }
+                if (testIdSet.find(g["id"].get<uint32_t>()) != testIdSet.end())
+                {
+                    result.errMsg = "JSON parse error: identical ID exists";
+                    return result;
+                }
+                testIdSet.insert(g["id"].get<uint32_t>());
+
+                if (!g.contains("source_sequence"))
+                {
+                    result.errMsg = std::string("JSON parse error: invalid sequence") + "(Geo ID : " + std::to_string(g["id"].get<uint32_t>()) + ")";
+                    return result;
+                }
+                if (!g["source_sequence"].is_string() || g["source_sequence"].get<std::string>().empty())
+                {
+                    result.errMsg = std::string("JSON parse error: invalid sequence") + "(Geo ID : " + std::to_string(g["id"].get<uint32_t>()) + ")";
+                    return result;
+                }
+                if (!vimcube::command::parse(g["source_sequence"]).ok)
+                {
+                    result.errMsg = std::string("JSON parse error: sequence parse failed") + "(Geo ID : " + std::to_string(g["id"].get<uint32_t>()) + ")";
+                    return result;
+                }
+
+                // Everything successfully parsed
+                GeometryRecord geoRecord;
+                geoRecord.id = g["id"].get<uint32_t>();
+                geoRecord.sequenceRecord = g["source_sequence"].get<std::string>();
+                result.geometries.push_back(geoRecord);
+            }
+
+            fin.close();
+            this->filePath = path;
+            this->version = j["version"].get<uint32_t>();
+            result.ok = true;
+            result.errMsg = "Successfully loaded";
+
+            return result;
+        }
+        catch (const nlohmann::ordered_json::parse_error& e)
+        {
+            result.errMsg = std::string("JSON parse error: ") + e.what();
+            return result;
+        }
+        catch (const std::exception& e)
+        {
+            result.errMsg = std::string("Error: ") + e.what();
+            return result;
+        }
+    }
+
+    /*
+        Function Name : reset
+        Parameters : -
+        Return Type : void
+        Description : Reset FileManager
+    */
     void FileManager::reset()
     {
         this->filePath.clear();

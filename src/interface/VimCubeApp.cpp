@@ -225,7 +225,7 @@ namespace vimcube::interface {
             separatorDashed(),
 
             // Third box
-            text(keyBinding.getStatusMessage()) | color(Color::Red) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
+            text(this->appMode == AppMode::SEQUENCE ? keyBinding.getStatusMessage() : this->appMessage) | color(Color::Red3Bis) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
             (commandInput.empty() ? text(this->keyBinding.printKeyBuffer()) | bold | color(Color::Yellow1) : inputBox->Render()) | size(HEIGHT, EQUAL, 2)
             }) | borderDashed;
         });
@@ -316,6 +316,11 @@ namespace vimcube::interface {
         // return CatchEvent()
         return CatchEvent(mainLayout, [this](Event event) {
             
+            if (event.is_character())
+            {
+                this->appMessage.clear();
+            }
+
             if (this->appMode == AppMode::SEQUENCE)
             {
                 keyBinding.runKeyBinding(event);
@@ -766,6 +771,11 @@ namespace vimcube::interface {
             return "-- NORMAL --";
     }
 
+    vimcube::geometry::Scene& VimCubeApp::getScene()
+    {
+        return scene;
+    }
+
     /*
         Function Name : setNextId
         Parameters : uint32_t id
@@ -775,6 +785,21 @@ namespace vimcube::interface {
     void VimCubeApp::setNextId(uint32_t id)
     {
         this->scene.nextId = id;
+    }
+
+    vimcube::file::FileManager& VimCubeApp::getFileManager()
+    {
+        return this->fileManager;
+    }
+
+    void VimCubeApp::setAppMessage(const std::string& msg)
+    {
+        this->appMessage = msg;
+    }
+
+    const std::string& VimCubeApp::getAppMessage() const
+    {
+        return this->appMessage;
     }
 
     /*
@@ -795,5 +820,7 @@ namespace vimcube::interface {
         this->keyBinding.reset();
         this->inputCommands.reset();
         this->commandInput.clear();
+        this->fileManager.reset();
+        this->appMessage.clear();
     }
 }

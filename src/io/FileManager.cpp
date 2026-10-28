@@ -3,6 +3,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include "../command/CommandParser.h"
+#include "nlohmann/json_fwd.hpp"
 
 namespace vimcube::file
 {
@@ -81,7 +82,7 @@ namespace vimcube::file
     {
         return this->version;
     }
-    
+
     /*
         Function Name : writeFile
         Parameters : const std::string& path, const vimcube::geometry::Scene& scene
@@ -93,21 +94,21 @@ namespace vimcube::file
         SaveResult result;
         uint32_t currentVersion = this->version + 1;
 
-        nlohmann::json j;
+        nlohmann::ordered_json j;
         j["version"] = currentVersion;
 
         // geometries array
-        nlohmann::json bigArr = nlohmann::json::array();
+        nlohmann::ordered_json bigArr = nlohmann::ordered_json::array();
 
         for (const auto& g : scene.sceneGeos)
         {
             // geometries info object
-            nlohmann::json infoObj = nlohmann::json::object();
+            nlohmann::ordered_json infoObj = nlohmann::ordered_json::object();
             infoObj["id"] = g.getId();
             infoObj["source_sequence"] = g.getSequenceRecord();
 
             // command array
-            nlohmann::json commandsArr = nlohmann::json::array();
+            nlohmann::ordered_json commandsArr = nlohmann::ordered_json::array();
             vimcube::command::ParseResult parsed = vimcube::command::parse(g.getSequenceRecord());
             if (parsed.ok)
             {
@@ -119,7 +120,7 @@ namespace vimcube::file
                 for (size_t i = 0; i < parsed.commands.size(); i++)
                 {
                     vimcube::command::Command cmd = parsed.commands.at(i);
-                    nlohmann::json commandObj = nlohmann::json::object();
+                    nlohmann::ordered_json commandObj = nlohmann::ordered_json::object();
                     commandObj["step"] = i;
                     commandObj["op"] = opToString(cmd.op);
                     if (vimcube::command::getIsAxisNeeded(cmd.op))
@@ -154,6 +155,7 @@ namespace vimcube::file
         if (!fout.fail())
         {
             result.ok = true;
+            result.errMsg = "Successfully Saved";
             this->filePath = path;
             this->version = currentVersion;
         }
@@ -163,5 +165,11 @@ namespace vimcube::file
             return result;
         }
         return result;
+    }
+
+    void FileManager::reset()
+    {
+        this->filePath.clear();
+        this->version = 0;
     }
 }

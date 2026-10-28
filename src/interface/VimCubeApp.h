@@ -13,6 +13,7 @@
 #include "../geometry/SceneGeometry.h"
 #include "../geometry/Scene.h"
 #include "../render/Camera.h"
+#include "../io/FileManager.h"
 #include "KeyBinding.h"
 #include "InputCommands.h"
 
@@ -45,7 +46,10 @@ namespace vimcube::interface {
 
         bool isFocusMode = false;
 
+        vimcube::file::FileManager fileManager;
         std::string filePath;
+
+        std::string appMessage;
 
     public:
         VimCubeApp();
@@ -83,7 +87,13 @@ namespace vimcube::interface {
         void focusOnSelected();
         std::string getCurrentMode() const;
 
+        vimcube::geometry::Scene& getScene();
         void setNextId(uint32_t id);
+
+        vimcube::file::FileManager& getFileManager();
+
+        void setAppMessage(const std::string& msg);
+        const std::string& getAppMessage() const;
 
         void resetApp();
     };

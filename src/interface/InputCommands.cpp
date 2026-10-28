@@ -1,5 +1,6 @@
 #include "InputCommands.h"
 #include "VimCubeApp.h"
+#include "../io/FileManager.h"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -82,6 +83,15 @@ namespace vimcube::interface {
             Description : Return to title screen
         */
         this->insertItemToMap("q", [&](const std::vector<std::string>& args) { vimCube.setActiveTab(0); vimCube.resetApp(); });
+
+        /*
+            Syntax: w
+            Description : Write File
+        */
+        this->insertItemToMap("w", [&](const std::vector<std::string>& args) { 
+                vimcube::file::SaveResult result = vimCube.getFileManager().writeFile("/Users/hyp/Desktop/untitled.json", vimCube.getScene());
+                vimCube.setAppMessage(result.errMsg);
+        });
 
         /*
             Syntax: s <id>

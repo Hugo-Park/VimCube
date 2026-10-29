@@ -3,6 +3,8 @@
 #include "../io/FileManager.h"
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
+#include <stdexcept>
 #include <vector>
 
 namespace vimcube::interface {
@@ -85,12 +87,45 @@ namespace vimcube::interface {
         this->insertItemToMap("q", [&](const std::vector<std::string>& args) { vimCube.setActiveTab(0); vimCube.resetApp(); });
 
         /*
-            Syntax: w
+            Syntax: w <file_name>
             Description : Write File
         */
         this->insertItemToMap("w", [&](const std::vector<std::string>& args) { 
-                vimcube::file::SaveResult result = vimCube.getFileManager().writeFile("/Users/hyp/Desktop/untitled.json", vimCube.getScene());
+            if (!args.empty())
+            {
+                if (std::filesystem::path(args[0]).extension() != ".json")
+                {
+                    if (!std::filesystem::path(args[0]).has_extension())
+                    {
+                        std::string realPath = args[0] + ".json";
+                        vimcube::file::SaveResult result = vimCube.getFileManager().writeFile(vimCube.getFileManager().getDefaultPath(), realPath, vimCube.getScene());
+                        vimCube.setAppMessage(result.errMsg);
+                        return;
+                    }
+                    vimCube.setAppMessage("invalid file format");
+                    return;
+                }
+                vimcube::file::SaveResult result = vimCube.getFileManager().writeFile(vimCube.getFileManager().getDefaultPath(), args[0], vimCube.getScene());
                 vimCube.setAppMessage(result.errMsg);
+                return;
+            }
+            vimcube::file::SaveResult result = vimCube.getFileManager().writeFile(vimCube.getFileManager().getDefaultPath(), vimCube.getFileManager().getFileName(), vimCube.getScene());
+            vimCube.setAppMessage(result.errMsg);
+            return;
+        });
+
+        /*
+            Syntax: default <dir_path>
+            Description : Set default directory
+        */
+        this->insertItemToMap("default", [&](const std::vector<std::string>& args) { 
+
+            if (!args.empty()) {
+                vimcube::file::SaveResult result = vimCube.getFileManager().setDefaultPath(args[0]);
+                vimCube.setAppMessage(result.errMsg);
+                return;
+            }
+            vimCube.setAppMessage(":default <dir_path>");
         });
 
         /*

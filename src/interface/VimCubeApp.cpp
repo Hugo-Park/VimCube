@@ -14,6 +14,7 @@
 #include "../interface/InputCommands.h"
 #include "../interface/KeyBinding.h"
 #include "../utility/Math.h"
+#include "../utility/Utils.h"
 #include "SequenceRunner.h"
 
 namespace vimcube::interface {
@@ -50,6 +51,7 @@ namespace vimcube::interface {
     {
         activeTab = tabNum;
     }
+
     /*
         Function Name : createTitleScreen
         Parameters : ftxui::ScreenInteractive& screen
@@ -85,16 +87,7 @@ namespace vimcube::interface {
 
             else if (selected == 2)
             {
-                #if defined(__APPLE__) && defined(__MACH__)
-                    std::system("open https://buymeacoffee.com/huyeong");
-                #elif defined(__linux__)
-                    std::system("xdg-open https://buymeacoffee.com/huyeong");
-                #elif defined(_WIN32) || defined(_WIN64)
-                    ShellExecuteA(NULL, "open", https://buymeacoffee.com/huyeong, NULL, NULL, SW_SHOWNORMAL);
-                #else
-                    return;
-                #endif
-                return;
+                vimcube::utility::openBuyMeaCoffee();
             }
 
             else if (selected == 3)
@@ -144,13 +137,8 @@ namespace vimcube::interface {
             }
             else if (event == Event::Character('b') || event == Event::Character('B'))
             {
-                #if defined(__APPLE__) && defined(__MACH__)
-                    std::system("open https://buymeacoffee.com/huyeong");
-                #elif defined(__linux__)
-                    std::system("xdg-open https://buymeacoffee.com/huyeong");
-                #else
-                    return true;
-                #endif
+                if(!vimcube::utility::openBuyMeaCoffee())
+                    return false;
             }
             return false;
         });
@@ -207,26 +195,60 @@ namespace vimcube::interface {
         fileSizeStr = ss.str();
 
         return vbox({
+
             // First Box
-            text(" ") | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
+            vbox ({
+                paragraph("TEST"),
+            }) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
             separatorDashed(),
 
             // Second Box
             (this->getSelectedGeo() == nullptr ? 
             text("No Selected Geometry") | color(ftxui::Color::GrayDark) :
             vbox ({
-                paragraph("Geo ID: " + std::to_string(this->getSelectedGeo()->getId())),
-                paragraph("Vertices: " + std::to_string(this->getSelectedGeo()->getMesh().getVertices().size())),
-                paragraph("Edges: " + std::to_string(this->getSelectedGeo()->getMesh().getEdges().size())),
-                paragraph("Faces: " + std::to_string(this->getSelectedGeo()->getMesh().getFaces().size())),
-                paragraph("File Size: " + fileSizeStr),
-                paragraph("Gene Code: " + this->getSelectedGeo()->getSequenceRecord())
+                hbox({
+                    text("Geo ID: "),
+                    filler(),
+                    text(std::to_string(this->getSelectedGeo()->getId()))
+                }),
+                hbox({
+                    text("Vertices: "),
+                    filler(),
+                    text(std::to_string(this->getSelectedGeo()->getMesh().getVertices().size()))
+                }),
+                hbox({
+                    text("Edges: "),
+                    filler(),
+                    text(std::to_string(this->getSelectedGeo()->getMesh().getEdges().size()))
+                }),
+                hbox({
+                    text("Faces: "),
+                    filler(),
+                    text(std::to_string(this->getSelectedGeo()->getMesh().getFaces().size()))
+                }),
+                hbox({
+                    text("File Size: "),
+                    filler(),
+                    text(fileSizeStr)
+                }),
+                hbox({
+                    text("Gene Code: "),
+                    filler(),
+                    paragraph(this->getSelectedGeo()->getSequenceRecord())
+                })
             })
             ) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
             separatorDashed(),
+            /*
+                    hbox ({
+                        text(this->fileManager.getFilePath()) | size(HEIGHT, EQUAL, 2),
+                        filler(),
+                        text(this->getCurrentMode()) | color(Color::LightGreenBis) | align_right | size(HEIGHT, EQUAL, 2)    // FOR MODE INFO
+                    })
+            */
 
             // Third box
-            text(this->appMode == AppMode::SEQUENCE ? keyBinding.getStatusMessage() : this->appMessage) | color(Color::Red3Bis) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
+            paragraph(this->appMode == AppMode::SEQUENCE ? keyBinding.getStatusMessage() : this->appMessage) | color(Color::Red3Bis) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
             (commandInput.empty() ? text(this->keyBinding.printKeyBuffer()) | bold | color(Color::Yellow1) : inputBox->Render()) | size(HEIGHT, EQUAL, 2)
             }) | borderDashed;
         });
@@ -284,7 +306,7 @@ namespace vimcube::interface {
                         })
                     }),
                     hbox ({
-                        text("STATUS BAR") | size(HEIGHT, EQUAL, 2),
+                        text(this->fileManager.getFilePath()) | size(HEIGHT, EQUAL, 2),
                         filler(),
                         text(this->getCurrentMode()) | color(Color::LightGreenBis) | align_right | size(HEIGHT, EQUAL, 2)    // FOR MODE INFO
                     })

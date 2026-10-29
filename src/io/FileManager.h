@@ -33,15 +33,20 @@ namespace vimcube::file
     class FileManager
     {
     private:
-        std::string filePath;
+        std::string fileName = "untitled.json";
+        std::string defaultPath = "/Users/hyp/Desktop/";
         uint32_t version = 0;
 
     public:
-        const std::string& getFilePath() const;
+        const std::string& getFileName() const;
+        const std::string& getDefaultPath() const;
+        const std::string getFilePath() const;
         uint32_t getVersion() const;
 
-        SaveResult writeFile(const std::string& path, const vimcube::geometry::Scene& scene);
-        LoadResult loadFile(const std::string& path);
+        SaveResult setDefaultPath(const std::string& path);
+
+    SaveResult writeFile(const std::string& defaultPath, const std::string& fileName, const vimcube::geometry::Scene& scene);
+        LoadResult loadFile(const std::string& defaultPath, const std::string& fileName);
 
         void reset();
     };

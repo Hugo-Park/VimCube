@@ -1,8 +1,9 @@
 #include "FileManager.h"
+#include <cstdlib>
+#include <filesystem>
 #include <set>
 #include <cstdint>
 #include <cstddef>
-#include <exception>
 #include <fstream>
 #include <limits>
 #include <nlohmann/json.hpp>
@@ -62,6 +63,105 @@ namespace vimcube::file
             }
             return "x";
         }
+
+        /*
+            Function Name : makeFilePath
+            Parameters : const std::string& path, const std::string& name
+            Return Type : std::string
+            Description : Make full file path
+        */
+        std::string makeFilePath(const std::string& path, const std::string& name)
+        {
+            std::filesystem::path filePath = std::filesystem::path(path) / name;
+            return filePath.string();
+        }
+    }
+
+    /*
+        Function Name : getFileName
+        Parameters : -
+        Return Type : const std::string&
+        Description : Get file name
+    */
+    const std::string& FileManager::getFileName() const
+    {
+        return this->fileName;
+    }
+
+    /*
+        Function Name : getDefaultPath
+        Parameters : -
+        Return Type : const std::string&
+        Description : Get default path
+    */
+    const std::string& FileManager::getDefaultPath() const
+    {
+        return this->defaultPath;
+    }
+
+    /*
+        Function Name : setDefaultPath
+        Parameters : -
+        Return Type : SaveResult
+        Description : Set default path
+    */
+    SaveResult FileManager::setDefaultPath(const std::string& path)
+    {
+        SaveResult result;
+        if (path[0] == '~')
+        {
+            const char* home = getenv("HOME");
+            if (home == nullptr)
+            {
+                result.errMsg = "directory does not exist";
+                return result;
+            }
+            if (path.length() == 1)
+            {
+                std::string realPath = std::string(home);
+                std::error_code ec;
+                bool dirTest = std::filesystem::is_directory(realPath, ec);
+                if (ec || !dirTest)
+                {
+                    result.errMsg = "directory does not exist";
+                    return result;
+                }
+                result.ok = true;
+                result.errMsg = "default path has been set";
+                return result;
+            }
+            if (path[1] == '/')
+            {
+                std::string fullPath = std::string(home) + path.substr(1);
+                std::filesystem::path realPath(fullPath);
+                std::error_code ec;
+                bool dirTest = std::filesystem::is_directory(realPath, ec);
+                if (ec || !dirTest)
+                {
+                    result.errMsg = "directory does not exist";
+                    return result;
+                }
+
+                this->defaultPath = realPath.string();
+                result.ok = true;
+                result.errMsg = "default path has been set";
+                return result;
+            }
+            result.errMsg = "directory does not exist";
+            return result;
+        }
+
+        std::error_code ec;
+        bool dirTest = std::filesystem::is_directory(std::filesystem::path(path), ec);
+        if (ec || !dirTest)
+        {
+            result.errMsg = "directory does not exist";
+            return result;
+        }
+        this->defaultPath = path;
+        result.ok = true;
+        result.errMsg = "default path has been set";
+        return result;
     }
 
     /*
@@ -70,9 +170,9 @@ namespace vimcube::file
         Return Type : const std::string&
         Description : Get file path
     */
-    const std::string& FileManager::getFilePath() const
+    const std::string FileManager::getFilePath() const
     {
-        return this->filePath;
+        return makeFilePath(this->defaultPath, this->fileName);
     }
 
     /*
@@ -92,7 +192,7 @@ namespace vimcube::file
         Return Type : SaveResult
         Description : Write JSON file
     */
-    SaveResult FileManager::writeFile(const std::string& path, const vimcube::geometry::Scene& scene)
+    SaveResult FileManager::writeFile(const std::string& defaultPath, const std::string& fileName, const vimcube::geometry::Scene& scene)
     {
         SaveResult result;
         uint32_t newVersion = this->version + 1;
@@ -147,7 +247,7 @@ namespace vimcube::file
         }
         j["geometries"] = bigArr;
 
-        std::ofstream fout(path);
+        std::ofstream fout(makeFilePath(defaultPath, fileName));
         if(!fout.is_open())
         {
             result.errMsg = "JSON write error: cannot write a file";
@@ -157,10 +257,11 @@ namespace vimcube::file
         fout.close();
         if (!fout.fail())
         {
-            result.ok = true;
-            result.errMsg = "Successfully saved to " + path;
-            this->filePath = path;
+            this->defaultPath = defaultPath;
+            this->fileName = fileName;
             this->version = newVersion;
+            result.ok = true;
+            result.errMsg = "successfully saved";
         }
         else
         {
@@ -176,10 +277,10 @@ namespace vimcube::file
         Return Type : LoadResult
         Description : Load JSON file
     */
-    LoadResult FileManager::loadFile(const std::string& path)
+    LoadResult FileManager::loadFile(const std::string& defaultPath, const std::string& fileName)
     {
         LoadResult result;
-        std::ifstream fin(path);
+        std::ifstream fin(makeFilePath(defaultPath, fileName));
         if (!fin.is_open())
         {
             result.errMsg = "Cannot open a file";
@@ -265,7 +366,8 @@ namespace vimcube::file
             }
 
             fin.close();
-            this->filePath = path;
+            this->defaultPath = defaultPath;
+            this->fileName = fileName;
             this->version = j["version"].get<uint32_t>();
             result.ok = true;
             result.errMsg = "Successfully loaded";
@@ -292,7 +394,7 @@ namespace vimcube::file
     */
     void FileManager::reset()
     {
-        this->filePath.clear();
+        this->fileName = "untitled.json";
         this->version = 0;
     }
 }

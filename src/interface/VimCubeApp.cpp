@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <ftxui/component/component.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/event.hpp>
 #include <ftxui/dom/elements.hpp>
@@ -75,13 +76,13 @@ namespace vimcube::interface {
         option.on_enter = [&] {
             if (selected == 0)
             {
-                activeTab = 1;
+                this->activeTab = 1;
                 return;
             }
 
             else if (selected == 1)
             {
-                activeTab = 1;
+                this->panelIndex = 1;
                 return;
             }
 
@@ -97,7 +98,39 @@ namespace vimcube::interface {
             }
         };
 
+        // file path input box option
+        ftxui::InputOption option2;
+        option2.on_enter = [&] {
+            vimcube::file::LoadResult r = this->fileManager.loadFile(fileManager.getDefaultPath(), this->openFileName);
+            this->setAppMessage(r.errMsg);
+            if (r.ok)
+            {
+                RunnerResult result = this->applyLoadedGeometries(r.geometries);
+                if (!result.ok)
+                {
+                    this->setAppMessage("failed to load geometries");
+                }
+                this->activeTab = 1;
+                this->panelIndex = 0;
+            }
+            this->activeTab = 1;
+            this->panelIndex = 0;
+        };
+
+        option2.transform = [](ftxui::InputState state) {
+            ftxui::Element e = state.element;
+
+            e |= color(ftxui::Color::LightGreenBis);
+            e |= bgcolor(ftxui::Color::GrayDark);
+            return e;
+        };
+
+        option2.insert = false; // for blinking block cursor
+        option2.multiline = false; // for unknown error
+                                   //
+        auto inputBox2 = Input(&this->openFileName, "insert file name...", option2); // file path input box
         auto rightMenu = Menu(&entries, &selected, option);
+        auto container = ftxui::Container::Tab({rightMenu, inputBox2}, &panelIndex);
 
         // Render left title window
         auto leftComponent = Renderer([&] {
@@ -109,36 +142,56 @@ namespace vimcube::interface {
         });
 
         // Render all layouts
-        auto finalLayout = Renderer(rightMenu, [=] {
+        auto finalLayout = Renderer(container, [=] {
             int width = ftxui::Terminal::Size().dimx;
 
             int leftWidth = width * 0.8;
             int rightWidth = width * 0.2;
             return hbox ({
                 leftComponent->Render() | borderDashed | size(WIDTH, EQUAL, leftWidth) | flex,
-                rightMenu->Render() | borderDashed | size(WIDTH, EQUAL, rightWidth) | flex,
+                (this->panelIndex == 0 ? 
+                rightMenu->Render() : 
+                vbox ({
+                    rightMenu->Render(),
+                    container->Render()
+                })) | borderDashed | size(WIDTH, EQUAL, rightWidth) | flex
             }) | flex;
         });
 
         // Keyboard event handling
         auto componentWithEvents = CatchEvent(finalLayout, [&](Event event) {
-            if (event == Event::Character('q')  || event == Event::Character('Q') || event == Event::Escape)
+            if (this->panelIndex == 0)
             {
-                screen.Exit();
-                return true;
+                if (event == Event::Character('q')  || event == Event::Character('Q') || event == Event::Escape)
+                {
+                    selected = 3;
+                    screen.Exit();
+                    return true;
+                }
+                else if (event == Event::Character('n') || event == Event::Character('N'))
+                {
+                    selected = 0;
+                    this->activeTab = 1;
+                }
+                else if (event == Event::Character('o') || event == Event::Character('O'))
+                {
+                    selected = 1;
+                    this->panelIndex = 1;
+                    return true;
+                }
+                else if (event == Event::Character('b') || event == Event::Character('B'))
+                {
+                    selected = 2;
+                    if(!vimcube::utility::openBuyMeaCoffee())
+                        return false;
+                }
             }
-            else if (event == Event::Character('n') || event == Event::Character('N'))
+            else if (this->panelIndex == 1)
             {
-                this->activeTab = 1;
-            }
-            else if (event == Event::Character('o') || event == Event::Character('O'))
-            {
-                this->activeTab = 1;
-            }
-            else if (event == Event::Character('b') || event == Event::Character('B'))
-            {
-                if(!vimcube::utility::openBuyMeaCoffee())
-                    return false;
+                if (event == Event::Escape)
+                {
+                    this->panelIndex = 0;
+                }
             }
             return false;
         });
@@ -155,8 +208,6 @@ namespace vimcube::interface {
     ftxui::Component VimCubeApp::createWorkSpace(ftxui::ScreenInteractive& screen)
     {
         using namespace ftxui;
-
-        // static std::string commandInput = "";
 
         InputOption style = InputOption::Default();
 
@@ -207,45 +258,38 @@ namespace vimcube::interface {
             text("No Selected Geometry") | color(ftxui::Color::GrayDark) :
             vbox ({
                 hbox({
-                    text("Geo ID: "),
+                    text("ID: "),
                     filler(),
                     text(std::to_string(this->getSelectedGeo()->getId()))
                 }),
                 hbox({
-                    text("Vertices: "),
+                    text("V: "),
                     filler(),
                     text(std::to_string(this->getSelectedGeo()->getMesh().getVertices().size()))
                 }),
                 hbox({
-                    text("Edges: "),
+                    text("E: "),
                     filler(),
                     text(std::to_string(this->getSelectedGeo()->getMesh().getEdges().size()))
                 }),
                 hbox({
-                    text("Faces: "),
+                    text("F: "),
                     filler(),
                     text(std::to_string(this->getSelectedGeo()->getMesh().getFaces().size()))
                 }),
                 hbox({
-                    text("File Size: "),
+                    text("S: "),
                     filler(),
                     text(fileSizeStr)
                 }),
                 hbox({
-                    text("Gene Code: "),
+                    text("GC: "),
                     filler(),
                     paragraph(this->getSelectedGeo()->getSequenceRecord())
                 })
             })
             ) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
             separatorDashed(),
-            /*
-                    hbox ({
-                        text(this->fileManager.getFilePath()) | size(HEIGHT, EQUAL, 2),
-                        filler(),
-                        text(this->getCurrentMode()) | color(Color::LightGreenBis) | align_right | size(HEIGHT, EQUAL, 2)    // FOR MODE INFO
-                    })
-            */
 
             // Third box
             paragraph(this->appMode == AppMode::SEQUENCE ? keyBinding.getStatusMessage() : this->appMessage) | color(Color::Red3Bis) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
@@ -316,7 +360,7 @@ namespace vimcube::interface {
                 return vbox ({
                     canvas(std::move(c)) | center | borderDashed,
                     hbox ({
-                        text("STATUS BAR") | size(HEIGHT, EQUAL, 2),
+                        text(this->fileManager.getFilePath()) | size(HEIGHT, EQUAL, 2),
                         filler(),
                         text(this->getCurrentMode()) | color(Color::LightGreenBis) | align_right | size(HEIGHT, EQUAL, 2)    // FOR MODE INFO
                     })
@@ -901,5 +945,7 @@ namespace vimcube::interface {
         this->commandInput.clear();
         this->fileManager.reset();
         this->appMessage.clear();
+        this->openFileName.clear();
+        this->panelIndex = 0;
     }
 }

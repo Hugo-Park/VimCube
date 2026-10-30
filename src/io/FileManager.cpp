@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <fstream>
 #include <limits>
+#include <algorithm>
+#include <cctype>
 #include <nlohmann/json.hpp>
 #include "../command/CommandParser.h"
 
@@ -13,6 +15,8 @@ namespace vimcube::file
 {
     namespace
     {
+        enum class FILE_FORMAT { UNKNOWN, JSON };
+
         /*
             Function Name : opToString
             Parameters : -
@@ -74,6 +78,23 @@ namespace vimcube::file
         {
             std::filesystem::path filePath = std::filesystem::path(path) / name;
             return filePath.string();
+        }
+
+        /*
+            Function Name : getFileFormat
+            Parameters : const std::string& name
+            Return Type : FILE_FORMAT
+            Description : Get file extension format
+        */
+        FILE_FORMAT getFileFormat(const std::string& name)
+        {
+            std::string ext = std::filesystem::path(name).extension().string();
+            std::transform(ext.begin(), ext.end(), ext.begin(),
+                            [](unsigned char c) { return std::tolower(c); });
+            if (ext == ".json")
+                return FILE_FORMAT::JSON;
+            else
+                return FILE_FORMAT::UNKNOWN;
         }
     }
 
@@ -197,6 +218,12 @@ namespace vimcube::file
         SaveResult result;
         uint32_t newVersion = this->version + 1;
 
+        if (getFileFormat(fileName) != FILE_FORMAT::JSON)
+        {
+            result.errMsg = "incorrect file format";
+            return result;
+        }
+
         nlohmann::ordered_json j;
         j["version"] = newVersion;
 
@@ -280,6 +307,11 @@ namespace vimcube::file
     LoadResult FileManager::loadFile(const std::string& defaultPath, const std::string& fileName)
     {
         LoadResult result;
+        if (getFileFormat(fileName) != FILE_FORMAT::JSON)
+        {
+            result.errMsg = "incorrect file format";
+            return result;
+        }
         std::ifstream fin(makeFilePath(defaultPath, fileName));
         if (!fin.is_open())
         {

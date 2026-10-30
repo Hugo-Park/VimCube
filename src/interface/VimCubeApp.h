@@ -26,6 +26,7 @@ namespace vimcube::interface {
     {
     private:
         int activeTab = 0;
+        int panelIndex = 0;
         AppMode appMode = AppMode::NORMAL;
         KeyBinding keyBinding;
         InputCommands inputCommands;
@@ -48,7 +49,7 @@ namespace vimcube::interface {
         bool isFocusMode = false;
 
         vimcube::file::FileManager fileManager;
-        std::string filePath;
+        std::string openFileName;
 
         std::string appMessage;
 

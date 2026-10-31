@@ -148,13 +148,13 @@ namespace vimcube::interface {
             int leftWidth = width * 0.8;
             int rightWidth = width * 0.2;
             return hbox ({
-                leftComponent->Render() | borderDashed | size(WIDTH, EQUAL, leftWidth) | flex,
+                leftComponent->Render() | borderLight | size(WIDTH, EQUAL, leftWidth) | flex,
                 (this->panelIndex == 0 ? 
                 rightMenu->Render() : 
                 vbox ({
                     rightMenu->Render(),
                     container->Render()
-                })) | borderDashed | size(WIDTH, EQUAL, rightWidth) | flex
+                })) | borderLight | size(WIDTH, EQUAL, rightWidth) | flex
             }) | flex;
         });
 
@@ -251,7 +251,7 @@ namespace vimcube::interface {
             vbox ({
                 paragraph("TEST"),
             }) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
-            separatorDashed(),
+            separator(),
 
             // Second Box
             (this->getSelectedGeo() == nullptr ? 
@@ -289,12 +289,12 @@ namespace vimcube::interface {
                 })
             })
             ) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 1),
-            separatorDashed(),
+            separator(),
 
             // Third box
-            paragraph(this->appMode == AppMode::SEQUENCE ? keyBinding.getStatusMessage() : this->appMessage) | color(Color::Red3Bis) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
+            paragraph(this->appMode == AppMode::SEQUENCE ? keyBinding.getStatusMessage() : this->appMessage) | color(Color::LightGreenBis) | size(HEIGHT, EQUAL, ftxui::Terminal::Size().dimy / 3 - 2),    // FOR ERROR PRINT
             (commandInput.empty() ? text(this->keyBinding.printKeyBuffer()) | bold | color(Color::Yellow1) : inputBox->Render()) | size(HEIGHT, EQUAL, 2)
-            }) | borderDashed;
+            }) | borderLight;
         });
 
         // Render right canvas
@@ -320,7 +320,7 @@ namespace vimcube::interface {
             // Draw Scene Geometries
             for (auto& obj : this->scene.sceneGeos)
             {
-                vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color(ftxui::Color::Yellow3Bis) : ftxui::Color::White);
+                vimcube::geo_draw::draw(obj.getTransform().getModelMatrix(), this->mainCamera, obj.getMesh(), c, obj.getIsSelected() ? ftxui::Color(ftxui::Color::Yellow1) : ftxui::Color::White);
             }
 
             // Canvas for axis screen
@@ -339,13 +339,13 @@ namespace vimcube::interface {
                 auto bottomOffset = emptyElement() | size(HEIGHT, EQUAL, 1);
 
                 return vbox ({
-                    dbox({ canvas(std::move(c)) | center | borderDashed, 
+                    dbox({ canvas(std::move(c)) | center | borderLight, 
                         vbox({ filler(), 
                                 hbox({ leftOffset,
                                 canvas(std::move(x)) 
                                 | size(WIDTH, EQUAL, terminalSize.dimx * 0.15 / 2) 
                                 | size(HEIGHT, EQUAL, terminalSize.dimx * 0.15 / 4) 
-                                | borderDashed | color(Color::GrayDark)}),
+                                | borderLight | color(Color::GrayDark)}),
                                 bottomOffset
                         })
                     }),
@@ -358,7 +358,7 @@ namespace vimcube::interface {
             }
             else 
                 return vbox ({
-                    canvas(std::move(c)) | center | borderDashed,
+                    canvas(std::move(c)) | center | borderLight,
                     hbox ({
                         text(this->fileManager.getFilePath()) | size(HEIGHT, EQUAL, 2),
                         filler(),

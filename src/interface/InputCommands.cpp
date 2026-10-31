@@ -102,6 +102,35 @@ namespace vimcube::interface {
         });
 
         /*
+            Syntax: wq <file_name>
+            Description : Write File and Quit
+        */
+        this->insertItemToMap("wq", [&](const std::vector<std::string>& args) { 
+            if (!args.empty())
+            {
+                vimcube::file::SaveResult result = vimCube.getFileManager().writeFile(vimCube.getFileManager().getDefaultPath(), args[0], vimCube.getScene());
+                if (!result.ok)
+                {
+                    vimCube.setAppMessage(result.errMsg);
+                    return;
+                }
+                vimCube.setActiveTab(0);
+                vimCube.resetApp();
+                return;
+            }
+            vimcube::file::SaveResult result = vimCube.getFileManager().writeFile(vimCube.getFileManager().getDefaultPath(), vimCube.getFileManager().getFileName(), vimCube.getScene());
+
+            if (!result.ok)
+            {
+                vimCube.setAppMessage(result.errMsg);
+                return;
+            }
+            vimCube.setActiveTab(0);
+            vimCube.resetApp();
+            return;
+        });
+
+        /*
             Syntax: default <dir_path>
             Description : Set default directory
         */

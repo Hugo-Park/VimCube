@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdint>
 #include "../geometry/Scene.h"
+#include "../utility/Utils.h"
 
 namespace vimcube::file
 {
@@ -34,8 +35,20 @@ namespace vimcube::file
     {
     private:
         std::string fileName = "untitled.json";
-        std::string defaultPath = "/Users/hyp/Desktop/";
+        std::string defaultPath = setDefaultPath();
         uint32_t version = 0;
+
+        const std::string setDefaultPath()
+        {
+            vimcube::utility::OS os = vimcube::utility::getOperatingSystem();
+            const char* home = getenv("HOME");
+            if (home == nullptr)
+            {
+                return "Path Error: cannot find home directory";
+            }
+            std::string realPath = std::string(home);
+            return realPath + "/Desktop";
+        }
 
     public:
         const std::string& getFileName() const;
@@ -43,9 +56,9 @@ namespace vimcube::file
         const std::string getFilePath() const;
         uint32_t getVersion() const;
 
-        SaveResult setDefaultPath(const std::string& path);
+        SaveResult replaceDefaultPath(const std::string& path);
 
-    SaveResult writeFile(const std::string& defaultPath, const std::string& fileName, const vimcube::geometry::Scene& scene);
+        SaveResult writeFile(const std::string& defaultPath, const std::string& fileName, const vimcube::geometry::Scene& scene);
         LoadResult loadFile(const std::string& defaultPath, const std::string& fileName);
 
         void reset();

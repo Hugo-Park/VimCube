@@ -121,12 +121,12 @@ namespace vimcube::file
     }
 
     /*
-        Function Name : setDefaultPath
-        Parameters : -
+        Function Name : replaceDefaultPath
+        Parameters : const std::string& path
         Return Type : SaveResult
-        Description : Set default path
+        Description : Replace default path with another path
     */
-    SaveResult FileManager::setDefaultPath(const std::string& path)
+    SaveResult FileManager::replaceDefaultPath(const std::string& path)
     {
         SaveResult result;
         if (path[0] == '~')

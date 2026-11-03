@@ -1,7 +1,6 @@
 #include "InputCommands.h"
 #include "VimCubeApp.h"
 #include "../io/FileManager.h"
-#include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
@@ -137,7 +136,7 @@ namespace vimcube::interface {
         this->insertItemToMap("default", [&](const std::vector<std::string>& args) { 
 
             if (!args.empty()) {
-                vimcube::file::SaveResult result = vimCube.getFileManager().setDefaultPath(args[0]);
+                vimcube::file::SaveResult result = vimCube.getFileManager().replaceDefaultPath(args[0]);
                 vimCube.setAppMessage(result.errMsg);
                 return;
             }

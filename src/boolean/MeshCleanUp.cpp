@@ -112,4 +112,44 @@ namespace vimcube::boolean
         result.mesh = std::move(newMesh);
         return result;
     }
+
+    /*
+        Function Name : removeDegenerateTriangles
+        Parameters : const vimcube::geometry::Mesh& m
+        Return Type : RemoveDegenerateResult
+        Description : Remove degenerate triangles of the mesh
+    */
+    RemoveDegenerateResult removeDegenerateTriangles(const vimcube::geometry::Mesh& m)
+    {
+        RemoveDegenerateResult result;
+        std::vector<vimcube::geometry::Face> newFaces;
+
+        for (const auto& f : m.getFaces())
+        {
+            if (f.v0 == f.v1 || f.v0 == f.v2 || f.v1 == f.v2)
+            {
+                result.removedFacesNum++;
+                continue;
+            }
+            newFaces.push_back(f);
+        }
+
+        vimcube::geometry::Mesh newMesh(newFaces, m.getVertices(), std::vector<vimcube::geometry::Edge>());
+        newMesh.setEdgesByFaces();
+        result.mesh = std::move(newMesh);
+        return result;
+    }
+
+    CleanUpResult cleanUpMesh(const vimcube::geometry::Mesh& m)
+    {
+        CleanUpResult result;
+
+        WeldResult w = weldVertices(m);
+        result.mergedVerticesNum = w.mergedVerticesNum;
+
+        RemoveDegenerateResult r = removeDegenerateTriangles(w.mesh);
+        result.removedFacesNum = r.removedFacesNum;
+
+        return result;
+    }
 }

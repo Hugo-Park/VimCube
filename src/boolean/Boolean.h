@@ -13,7 +13,16 @@ namespace vimcube::boolean
         std::string errorMessage;
     };
 
-    WaterTightResult checkIsMeshClosed(const vimcube::geometry::Mesh& mesh);
+    struct WindingResult
+    {
+        bool isConsistent = false;
+        uint32_t inconsistentNum = 0;
+        std::string errorMessage;
+    };
+
+    WaterTightResult checkIsMeshClosed(const vimcube::geometry::Mesh& m);
+    WindingResult checkIsWindingConsistent(const vimcube::geometry::Mesh& m);
+    float computeSignedVolume(const vimcube::geometry::Mesh& m);
 }
 
 #endif

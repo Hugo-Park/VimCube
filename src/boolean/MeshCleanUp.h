@@ -14,6 +14,21 @@ namespace vimcube::boolean
         uint32_t mergedVerticesNum = 0;
     };
 
+    struct RemoveDegenerateResult
+    {
+        vimcube::geometry::Mesh mesh;
+        uint32_t removedFacesNum = 0;
+    };
+
+    struct CleanUpResult
+    {
+        uint32_t mergedVerticesNum = 0;
+        uint32_t removedFacesNum = 0;
+    };
+
     WeldResult weldVertices(const vimcube::geometry::Mesh& m);
+    RemoveDegenerateResult removeDegenerateTriangles(const vimcube::geometry::Mesh& m);
+
+    CleanUpResult cleanUpMesh(const vimcube::geometry::Mesh& m);
 }
 #endif

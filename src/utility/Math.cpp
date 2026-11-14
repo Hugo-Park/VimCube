@@ -193,6 +193,23 @@ namespace vimcube::math {
     }
 
     /*
+        Function Name : castToPoint3d
+        Parameters : const vimcube::geometry::Vector3d& v
+        Return Type : vimcube::geometry::Point3d
+        Description : Cast to Point3d
+    */
+    vimcube::geometry::Point3d castToPoint3d(const vimcube::geometry::Vector3d& v)
+    {
+        vimcube::geometry::Point3d returnPoint;
+
+        returnPoint.x = v.x;
+        returnPoint.y = v.y;
+        returnPoint.z = v.z;
+
+        return returnPoint;
+    }
+
+    /*
         Function Name : castToPoint4d
         Parameters : const vimcube::geometry::Point4d& p
         Return Type : vimcube::geometry::Point4d
@@ -207,6 +224,23 @@ namespace vimcube::math {
         returnPoint.z = p.z;
 
         return returnPoint;
+    }
+
+    /*
+        Function Name : castToVector3d
+        Parameters : const vimcube::geometry::Point3d& p
+        Return Type : vimcube::geometry::Vector3d
+        Description : Cast to Vector3d
+    */
+    vimcube::geometry::Vector3d castToVector3d(const vimcube::geometry::Point3d& p)
+    {
+        vimcube::geometry::Vector3d returnVector;
+
+        returnVector.x = p.x;
+        returnVector.y = p.y;
+        returnVector.z = p.z;
+
+        return returnVector;
     }
 
     /*

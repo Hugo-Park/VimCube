@@ -1,5 +1,6 @@
 #include "Math.h"
 #include <cmath>
+#include <cstddef>
 
 namespace vimcube::math {
     
@@ -193,6 +194,84 @@ namespace vimcube::math {
     }
 
     /*
+        Function Name : getInverse3by3
+        Parameters : const Matrix3by3& m
+        Return Type : Matrix3by3
+        Description : Return inverse of Matrix3by3
+    */
+    Matrix3by3 getInverse3by3(const Matrix3by3& m)
+    {
+        // Use adj(A) / det(A)
+
+        float det = getDet3by3(m);
+
+        Matrix3by3 inverse;
+        Matrix3by3 adj;
+        adj.entries[0][0] = m.entries[1][1] * m.entries[2][2] - m.entries[1][2] * m.entries[2][1];
+        adj.entries[0][1] = (-1) * (m.entries[0][1] * m.entries[2][2] - m.entries[0][2] * m.entries[2][1]);
+        adj.entries[0][2] = m.entries[0][1] * m.entries[1][2] - m.entries[0][2] * m.entries[1][1];
+        adj.entries[1][0] = (-1) * (m.entries[1][0] * m.entries[2][2] - m.entries[1][2] * m.entries[2][0]);
+        adj.entries[1][1] = m.entries[0][0] * m.entries[2][2] - m.entries[0][2] * m.entries[2][0];
+        adj.entries[1][2] = (-1) * (m.entries[0][0] * m.entries[1][2] - m.entries[0][2] * m.entries[1][0]);
+        adj.entries[2][0] = m.entries[1][0] * m.entries[2][1] - m.entries[1][1] * m.entries[2][0];
+        adj.entries[2][1] = (-1) * (m.entries[0][0] * m.entries[2][1] - m.entries[0][1] * m.entries[2][0]);
+        adj.entries[2][2] = m.entries[0][0] * m.entries[1][1] - m.entries[0][1] * m.entries[1][0];
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            for (size_t j = 0; j < 3; j++)
+            {
+                inverse.entries[i][j] = adj.entries[i][j] / det;
+            }
+        }
+
+        return inverse;
+    }
+
+    /*
+        Function Name : getTranspose3by3
+        Parameters : const Matrix3by3& m
+        Return Type : Matrix3by3
+        Description : Return transpose of Matrix3by3
+    */
+    Matrix3by3 getTranspose3by3(const Matrix3by3& m)
+    {
+        Matrix3by3 result = m;
+        for (size_t i = 0; i < 3; i++)
+        {
+            for (size_t j = i + 1; j < 3; j++)
+            {
+                float temp = result.entries[i][j];
+                result.entries[i][j] = result.entries[j][i];
+                result.entries[j][i] = temp;
+            }
+        }
+
+        return result;
+    }
+
+    /*
+        Function Name : getPartialFrom4by4
+        Parameters : const Matrix4by4& m
+        Return Type : Matrix3by3
+        Description : Get Matrix3by3 from Matrix4by4
+    */
+    Matrix3by3 getPartialFrom4by4(const Matrix4by4& m)
+    {
+        Matrix3by3 mat;
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            for (size_t j = 0; j < 3; j++)
+            {
+                mat.entries[i][j] = m.entries[i][j];
+            }
+        }
+
+        return mat;
+    }
+
+    /*
         Function Name : castToPoint3d
         Parameters : const vimcube::geometry::Vector3d& v
         Return Type : vimcube::geometry::Point3d
@@ -205,6 +284,23 @@ namespace vimcube::math {
         returnPoint.x = v.x;
         returnPoint.y = v.y;
         returnPoint.z = v.z;
+
+        return returnPoint;
+    }
+
+    /*
+        Function Name : castToPoint3d
+        Parameters : const vimcube::geometry::Point4d& p
+        Return Type : vimcube::geometry::Point3d
+        Description : Cast to Point3d
+    */
+    vimcube::geometry::Point3d castToPoint3d(const vimcube::geometry::Point4d& p)
+    {
+        vimcube::geometry::Point3d returnPoint;
+
+        returnPoint.x = p.x;
+        returnPoint.y = p.y;
+        returnPoint.z = p.z;
 
         return returnPoint;
     }
@@ -258,6 +354,23 @@ namespace vimcube::math {
         returnVector.z = v.z;
 
         return returnVector;
+    }
+
+    /*
+        Function Name : getProduct3by3andVector3d
+        Parameters : const Matrix3by3& m, const vimcube::geometry::Vector3d v
+        Return Type : vimcube::geometry::Vector3d
+        Description : Get product of Matrix3by3 and Vector3d
+    */
+    vimcube::geometry::Vector3d getProduct3by3andVector3d(const Matrix3by3& m, const vimcube::geometry::Vector3d v)
+    {
+        vimcube::geometry::Vector3d vec;
+
+        vec.x = m.entries[0][0] * v.x + m.entries[0][1] * v.y + m.entries[0][2] * v.z;
+        vec.y = m.entries[1][0] * v.x + m.entries[1][1] * v.y + m.entries[1][2] * v.z;
+        vec.z = m.entries[2][0] * v.x + m.entries[2][1] * v.y + m.entries[2][2] * v.z;
+
+        return vec;
     }
 
     /*

@@ -35,13 +35,20 @@ namespace vimcube::math {
     Matrix3by3 getProduct3by3(const Matrix3by3& m1, const Matrix3by3& m2);
     Matrix4by4 getProduct4by4(const Matrix4by4& m1, const Matrix4by4& m2);
 
+    Matrix3by3 getInverse3by3(const Matrix3by3& m);
+    Matrix3by3 getTranspose3by3(const Matrix3by3& m);
+
+    Matrix3by3 getPartialFrom4by4(const Matrix4by4& m);
+
     /* Vector Methods */
 
     vimcube::geometry::Point3d castToPoint3d(const vimcube::geometry::Vector3d& v);
+    vimcube::geometry::Point3d castToPoint3d(const vimcube::geometry::Point4d& p);
     vimcube::geometry::Point4d castToPoint4d(const vimcube::geometry::Point3d& p);
     vimcube::geometry::Vector3d castToVector3d(const vimcube::geometry::Point3d& p);
     vimcube::geometry::Vector4d castToVector4d(const vimcube::geometry::Vector3d& v);
 
+    vimcube::geometry::Vector3d getProduct3by3andVector3d(const Matrix3by3& m, const vimcube::geometry::Vector3d v);
     vimcube::geometry::Point4d getProduct4by4andPoint4d(const Matrix4by4& m, const vimcube::geometry::Point4d p);
     vimcube::geometry::Vector4d getProduct4by4andVector4d(const Matrix4by4& m, const vimcube::geometry::Vector4d v);
 

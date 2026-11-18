@@ -22,6 +22,7 @@ namespace vimcube::boolean
 
     struct CleanUpResult
     {
+        vimcube::geometry::Mesh mesh;
         uint32_t mergedVerticesNum = 0;
         uint32_t removedFacesNum = 0;
     };

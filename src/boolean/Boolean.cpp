@@ -38,6 +38,12 @@ namespace vimcube::boolean
             return result;
         }
         
+        /*
+            Function Name : extractDirectedEdgeFromMesh
+            Parameters : const vimcube::geometry::Mesh& m
+            Return Type : std::map<std::pair<uint32_t, uint32_t>, int>
+            Description : Extract edge (with direction) index map from Mesh
+        */
         std::map<std::pair<uint32_t, uint32_t>, int> extractDirectedEdgeFromMesh(const vimcube::geometry::Mesh& m)
         {
             std::map<std::pair<uint32_t, uint32_t>, int> result;

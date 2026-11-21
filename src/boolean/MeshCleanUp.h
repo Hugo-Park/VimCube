@@ -5,8 +5,6 @@
 
 namespace vimcube::boolean
 {
-    static constexpr float EPSILON = 0.001f;
-    static constexpr float EPSILON_SQUARE = EPSILON * EPSILON;
 
     struct WeldResult
     {

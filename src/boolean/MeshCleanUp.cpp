@@ -1,4 +1,5 @@
 #include "MeshCleanUp.h"
+#include "Tolerance.h"
 #include <sys/types.h>
 #include <cstdint>
 #include <limits>
@@ -20,9 +21,9 @@ namespace vimcube::boolean
         std::tuple<int, int, int> convertPoint3dToCell(const vimcube::geometry::Point3d& pt)
         {
             std::tuple<int, int, int> t;
-            std::get<0>(t) = static_cast<int>(std::floor(pt.x / EPSILON));
-            std::get<1>(t) = static_cast<int>(std::floor(pt.y / EPSILON));
-            std::get<2>(t) = static_cast<int>(std::floor(pt.z / EPSILON));
+            std::get<0>(t) = static_cast<int>(std::floor(pt.x / EPSILON_WELD_DISTANCE));
+            std::get<1>(t) = static_cast<int>(std::floor(pt.y / EPSILON_WELD_DISTANCE));
+            std::get<2>(t) = static_cast<int>(std::floor(pt.z / EPSILON_WELD_DISTANCE));
             return t;
         }
 
@@ -53,7 +54,7 @@ namespace vimcube::boolean
                             for (const auto& c : it->second)
                             {
                                 float lengthSquare = (newVertices[c].position.x - pt.x) * (newVertices[c].position.x - pt.x) + (newVertices[c].position.y - pt.y) * (newVertices[c].position.y - pt.y) + (newVertices[c].position.z - pt.z) * (newVertices[c].position.z - pt.z);
-                                if (lengthSquare <= EPSILON_SQUARE)
+                                if (lengthSquare <= EPSILON_WELD_DISTANCE_SQUARED)
                                 {
                                     return c;
                                 }

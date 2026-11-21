@@ -1,6 +1,7 @@
 #include "WorldMesh.h"
 #include <vector>
 #include <cstdint>
+#include <utility>
 
 namespace vimcube::boolean
 {

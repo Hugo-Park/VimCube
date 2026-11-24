@@ -19,5 +19,9 @@ namespace vimcube::boolean
     float computeSignedDistance(const vimcube::geometry::Vector3d& normal, const vimcube::geometry::Point3d& point, const vimcube::geometry::Point3d& pointOnPlane);
 
     PlaneSide classifySignedDistance(const float d);
+
+    vimcube::geometry::BoundingBox3d computeTriangleAABB(const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2, const vimcube::geometry::Point3d& p3);
+
+    bool isAABBOverlap(const vimcube::geometry::BoundingBox3d& a, const vimcube::geometry::BoundingBox3d& b);
 }
 #endif

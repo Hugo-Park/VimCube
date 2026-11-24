@@ -62,4 +62,49 @@ namespace vimcube::boolean
         else if (d < -EPSILON_PLANE_DISTANCE) return PlaneSide::BACKWARD;
         return PlaneSide::ON_PLANE;
     }
+
+    /*
+        Function Name : computeTriangleAABB
+        Parameters : const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2, const vimcube::geometry::Point3d& p3
+        Return Type : vimcube::geometry::BoundingBox3d
+        Description : Get bounding box of a single triangle with three points
+    */
+    vimcube::geometry::BoundingBox3d computeTriangleAABB(const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2, const vimcube::geometry::Point3d& p3)
+    {
+        vimcube::geometry::BoundingBox3d bbox;
+
+        bbox.min.x = std::min(p1.x, p2.x);
+        bbox.min.x = std::min(bbox.min.x, p3.x);
+
+        bbox.max.x = std::max(p1.x, p2.x);
+        bbox.max.x = std::max(bbox.max.x, p3.x);
+
+        bbox.min.y = std::min(p1.y, p2.y);
+        bbox.min.y = std::min(bbox.min.y, p3.y);
+
+        bbox.max.y = std::max(p1.y, p2.y);
+        bbox.max.y = std::max(bbox.max.y, p3.y);
+
+        bbox.min.z = std::min(p1.z, p2.z);
+        bbox.min.z = std::min(bbox.min.z, p3.z);
+
+        bbox.max.z = std::max(p1.z, p2.z);
+        bbox.max.z = std::max(bbox.max.z, p3.z);
+
+        return bbox;
+    }
+
+    /*
+        Function Name : isAABBOverlap
+        Parameters : const vimcube::geometry::BoundingBox3d& a, const vimcube::geometry::BoundingBox3d& b
+        Return Type : bool
+        Description : Check overlapping of two bounding boxes
+    */
+    bool isAABBOverlap(const vimcube::geometry::BoundingBox3d& a, const vimcube::geometry::BoundingBox3d& b)
+    {
+        if (a.max.x + EPSILON_AABB_MARGIN < b.min.x || b.max.x + EPSILON_AABB_MARGIN < a.min.x) return false;
+        if (a.max.y + EPSILON_AABB_MARGIN < b.min.y || b.max.y + EPSILON_AABB_MARGIN < a.min.y) return false;
+        if (a.max.z + EPSILON_AABB_MARGIN < b.min.z || b.max.z + EPSILON_AABB_MARGIN < a.min.z) return false;
+        return true;
+    }
 }

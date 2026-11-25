@@ -151,7 +151,7 @@ namespace vimcube::geometry {
 
     /*
         Class Name : Face 
-        Description : Face objects construct a Mesh.
+        Description : Face objects construct a Mesh. It consists of three indices.
     */
     struct Face {
         uint32_t v0;    // Vertex index
@@ -160,6 +160,19 @@ namespace vimcube::geometry {
 
         Face() = default;
         Face(uint32_t v0, uint32_t v1, uint32_t v2) : v0(v0), v1(v1), v2(v2) {};
+    };
+
+    /*
+        Class Name : Triangle 
+        Description : It consists of three Point3d objects
+    */
+    struct Triangle {
+        Point3d p0;
+        Point3d p1;
+        Point3d p2;
+
+        Triangle() = default;
+        Triangle(Point3d p0, Point3d p1, Point3d p2) : p0(p0), p1(p1), p2(p2) {};
     };
 
     /*

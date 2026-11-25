@@ -4,6 +4,16 @@
 
 namespace vimcube::boolean
 {
+    // Location of the point related to the plane
+    enum class PlaneSide { FORWARD, BACKWARD, ON_PLANE };
+
+    // Relation between two triangles
+    // NONE : no intersection
+    // SEGMENT : line of intersection exists
+    // COPLANAR : on the same plane
+    // INVALID : one or two triangles is degenerated
+    enum class TriangleRelation { NONE, SEGMENT, COPLANAR, INVALID };
+
     struct TriangleInfo
     {
         vimcube::geometry::Vector3d normal = {0, 0, 0};
@@ -11,8 +21,12 @@ namespace vimcube::boolean
         bool isDegenerate = true;
     };
 
-    // Location of the point related to the plane
-    enum class PlaneSide { FORWARD, BACKWARD, ON_PLANE };
+    struct TriangleIntersection
+    {
+        TriangleRelation relation = TriangleRelation::NONE;
+        vimcube::geometry::Point3d start = {0, 0, 0};
+        vimcube::geometry::Point3d end = {0, 0, 0};
+    };
 
     TriangleInfo getTriangleInfoFromPoints(const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2, const vimcube::geometry::Point3d& p3);
 
@@ -23,5 +37,7 @@ namespace vimcube::boolean
     vimcube::geometry::BoundingBox3d computeTriangleAABB(const vimcube::geometry::Point3d& p1, const vimcube::geometry::Point3d& p2, const vimcube::geometry::Point3d& p3);
 
     bool isAABBOverlap(const vimcube::geometry::BoundingBox3d& a, const vimcube::geometry::BoundingBox3d& b);
+
+    TriangleIntersection classifyTriangleIntersection(const vimcube::geometry::Triangle& a, const vimcube::geometry::Triangle& b);
 }
 #endif

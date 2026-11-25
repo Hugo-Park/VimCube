@@ -8,6 +8,7 @@ namespace vimcube::boolean
     static constexpr float EPSILON_PLANE_DISTANCE = 1e-4f;
     static constexpr float EPSILON_DEGEN_TRIANGLE_RATIO = 1e-4f;
     static constexpr float EPSILON_AABB_MARGIN = 1e-4f;
+    static constexpr float EPSILON_COPLANAR_TEST = 1e-4f;   // minumum of cross-product of two normal vectors
 }
 
 #endif

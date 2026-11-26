@@ -4,6 +4,8 @@
 
 namespace vimcube::math {
 
+    static constexpr float PI = 3.1415927f;
+
     struct Matrix3by3
     {
         float entries[3][3];

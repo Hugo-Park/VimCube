@@ -5,6 +5,7 @@
 #include <array>
 #include <optional>
 #include <utility>
+#include <cmath>
 
 namespace vimcube::boolean
 {
@@ -60,6 +61,41 @@ namespace vimcube::boolean
 
             return intersections;
         }
+
+        /*
+            Function Name : computeSolidAngle
+            Parameters : const vimcube::geometry::Point3d& p, const vimcube::geometry::Triangle& t
+            Return Type : float
+            Description : Compute solid angle
+        */
+        float computeSolidAngle(const vimcube::geometry::Point3d& p, const vimcube::geometry::Triangle& t)
+        {
+            vimcube::geometry::Vector3d a(t.p0.x - p.x, t.p0.y - p.y, t.p0.z - p.z);
+            vimcube::geometry::Vector3d b(t.p1.x - p.x, t.p1.y - p.y, t.p1.z - p.z);
+            vimcube::geometry::Vector3d c(t.p2.x - p.x, t.p2.y - p.y, t.p2.z - p.z);
+
+            float la = a.getSize();
+            float lb = b.getSize();
+            float lc = c.getSize();
+
+            float N = vimcube::math::dotProductVector3d(a, vimcube::math::crossProductVector3d(b, c));
+            float D = la * lb * lc + vimcube::math::dotProductVector3d(a, b) * lc + vimcube::math::dotProductVector3d(b, c) * la + vimcube::math::dotProductVector3d(c, a) * lb;
+
+            return 2 * std::atan2(N, D);
+        }
+    }
+
+    /*
+        Function Name : getTriangleFromFace
+        Parameters : const vimcube::geometry::Mesh& m, const vimcube::geometry::Face& f
+        Return Type : vimcube::geometry::Triangle
+        Description : Get triangle from mesh face
+    */
+    vimcube::geometry::Triangle getTriangleFromFace(const vimcube::geometry::Mesh& m, const vimcube::geometry::Face& f)
+    {
+        const std::vector<vimcube::geometry::Vertex>& v = m.getVertices();
+
+        return geometry::Triangle(v.at(f.v0).position, v.at(f.v1).position, v.at(f.v2).position);
     }
 
     /*
@@ -292,5 +328,36 @@ namespace vimcube::boolean
         result.start = start.first;
         result.end = end.first;
         return result;
+    }
+
+    /*
+        Function Name : classifyPointRelation
+        Parameters : const vimcube::geometry::Point3d& p, const vimcube::geometry::Mesh& m
+        Return Type : PointRelation
+        Description : Check relation between point and mesh(*CAUTION: CANNOT filter UNCERTAIN case*)
+    */
+    PointRelation classifyPointRelation(const vimcube::geometry::Point3d& p, const vimcube::geometry::Mesh& m)
+    {
+        PointRelation result;
+
+        std::vector<vimcube::geometry::Triangle> triangles;
+        for (const auto& f : m.getFaces())
+        {
+            triangles.push_back(getTriangleFromFace(m, f));
+        }
+
+        double sumAngle = 0;
+        for (const auto& t : triangles)
+        {
+            sumAngle += computeSolidAngle(p, t);
+        }
+
+        // compute normalized winding number
+        float w = 0.25f / vimcube::math::PI * sumAngle;
+        if (w > 0.5)
+        {
+            return PointRelation::INSIDE;
+        }
+        return PointRelation::OUTSIDE;
     }
 }

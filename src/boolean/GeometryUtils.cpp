@@ -338,8 +338,6 @@ namespace vimcube::boolean
     */
     PointRelation classifyPointRelation(const vimcube::geometry::Point3d& p, const vimcube::geometry::Mesh& m)
     {
-        PointRelation result;
-
         std::vector<vimcube::geometry::Triangle> triangles;
         for (const auto& f : m.getFaces())
         {

@@ -110,8 +110,8 @@ namespace vimcube::geo_draw {
     */
     void draw(const vimcube::math::Matrix4by4& modelMatrix, vimcube::camera::Camera& camera, const vimcube::geometry::Line3d& line, ftxui::Canvas& canvas, ftxui::Color color)
     {
-        auto pt1 = line.start_;
-        auto pt2 = line.end_;
+        auto pt1 = line.start;
+        auto pt2 = line.end;
 
         vimcube::geometry::Point2d point1 = camera.projectToCanvas(modelMatrix, pt1, canvas.width(), canvas.height());
         vimcube::geometry::Point2d point2 = camera.projectToCanvas(modelMatrix, pt2, canvas.width(), canvas.height());
@@ -136,8 +136,8 @@ namespace vimcube::geo_draw {
     {
         for (const auto& l : lines)
         {
-            auto pt1 = l.start_;
-            auto pt2 = l.end_;
+            auto pt1 = l.start;
+            auto pt2 = l.end;
 
             vimcube::geometry::Point2d point1 = camera.projectToCanvas(modelMatrix, pt1, canvas.width(), canvas.height());
             vimcube::geometry::Point2d point2 = camera.projectToCanvas(modelMatrix, pt2, canvas.width(), canvas.height());
@@ -164,8 +164,8 @@ namespace vimcube::geo_draw {
         size_t i = 0;
         for (const auto& l : lines)
         {
-            auto pt1 = l.start_;
-            auto pt2 = l.end_;
+            auto pt1 = l.start;
+            auto pt2 = l.end;
 
             vimcube::geometry::Point2d point1 = camera.projectToCanvas(modelMatrix, pt1, canvas.width(), canvas.height());
             vimcube::geometry::Point2d point2 = camera.projectToCanvas(modelMatrix, pt2, canvas.width(), canvas.height());

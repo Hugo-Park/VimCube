@@ -95,11 +95,11 @@ namespace vimcube::geometry {
         Description : Line3d has two points: start and end.
     */
     struct Line3d {
-        Point3d start_;
-        Point3d end_;
+        Point3d start;
+        Point3d end;
 
         Line3d() = default;
-        Line3d(const Point3d& start, const Point3d& end) : start_(start), end_(end) {};
+        Line3d(const Point3d& start, const Point3d& end) : start(start), end(end) {};
     };
 
     /*

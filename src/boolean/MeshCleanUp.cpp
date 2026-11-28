@@ -141,6 +141,12 @@ namespace vimcube::boolean
         return result;
     }
 
+    /*
+        Function Name : cleanUpMesh
+        Parameters : const vimcube::geometry::Mesh& m
+        Return Type : CleanUpResult
+        Description : Clean up mesh by welding vertices and removing degenerate triangles
+    */
     CleanUpResult cleanUpMesh(const vimcube::geometry::Mesh& m)
     {
         CleanUpResult result;
@@ -150,7 +156,7 @@ namespace vimcube::boolean
 
         RemoveDegenerateResult r = removeDegenerateTriangles(w.mesh);
         result.removedFacesNum = r.removedFacesNum;
-
+        result.mesh = std::move(r.mesh);
         return result;
     }
 }

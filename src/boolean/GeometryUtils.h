@@ -2,6 +2,8 @@
 #define GEOMETRY_UTILS_H
 #include "../geometry/GeoTypes.h"
 #include "../geometry/Mesh.h"
+#include <cstdint>
+#include <string>
 
 namespace vimcube::boolean
 {
@@ -18,6 +20,9 @@ namespace vimcube::boolean
     // Relation between point and mesh
     enum class PointRelation { INSIDE, OUTSIDE, UNCERTAIN };
 
+    // Location of target point related to triangle
+    enum class TriangleLocation { VERTEX, EDGE, INTERIOR, OUTSIDE };
+
     struct TriangleInfo
     {
         vimcube::geometry::Vector3d normal = {0, 0, 0};
@@ -30,6 +35,20 @@ namespace vimcube::boolean
         TriangleRelation relation = TriangleRelation::NONE;
         vimcube::geometry::Point3d start = {0, 0, 0};
         vimcube::geometry::Point3d end = {0, 0, 0};
+    };
+
+    struct IntersectionSegments
+    {
+        std::vector<std::vector<vimcube::geometry::Line3d>> linesPerFaceA;
+        std::vector<std::vector<vimcube::geometry::Line3d>> linesPerFaceB;
+        std::string errorMessage;
+    };
+
+    struct TriangleLocationResult
+    {
+        TriangleLocation location = TriangleLocation::OUTSIDE;
+        uint32_t index = 0; // if EGDE, (zero position + 1) % 3 / if VERTEX, non-zero position
+        std::string errorMessage;
     };
 
     vimcube::geometry::Triangle getTriangleFromFace(const vimcube::geometry::Mesh& m, const vimcube::geometry::Face& f);
@@ -47,5 +66,9 @@ namespace vimcube::boolean
     TriangleIntersection classifyTriangleIntersection(const vimcube::geometry::Triangle& a, const vimcube::geometry::Triangle& b);
 
     PointRelation classifyPointRelation(const vimcube::geometry::Point3d& p, const vimcube::geometry::Mesh& m);
+
+    IntersectionSegments computeIntersectionSegments(const vimcube::geometry::Mesh& a, const vimcube::geometry::Mesh& b);
+
+    TriangleLocationResult classifyPointInTriangle(const vimcube::geometry::Point3d& p, const vimcube::geometry::Triangle& t);
 }
 #endif

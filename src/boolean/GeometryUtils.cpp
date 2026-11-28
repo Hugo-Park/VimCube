@@ -1,8 +1,10 @@
 #include "GeometryUtils.h"
+#include <sys/types.h>
 #include "Tolerance.h"
 #include "../utility/Math.h"
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <optional>
 #include <utility>
 #include <cmath>
@@ -82,6 +84,31 @@ namespace vimcube::boolean
             float D = la * lb * lc + vimcube::math::dotProductVector3d(a, b) * lc + vimcube::math::dotProductVector3d(b, c) * la + vimcube::math::dotProductVector3d(c, a) * lb;
 
             return 2 * std::atan2(N, D);
+        }
+
+        /*
+            Function Name : computeBaryCentric
+            Parameters : const vimcube::geometry::Point3d& p, const vimcube::geometry::Triangle& t
+            Return Type : vimcube::geometry::Point3d
+            Description : Compute bary centric point in triangle (**Check isDegenerate first before calling this method**)
+        */
+        vimcube::geometry::Point3d computeBarycentric(const vimcube::geometry::Point3d& p, const vimcube::geometry::Triangle& t)
+        {
+            vimcube::geometry::Vector3d v0 = vimcube::math::castToVector3d(t.p0);
+            vimcube::geometry::Vector3d v1 = vimcube::math::castToVector3d(t.p1);
+            vimcube::geometry::Vector3d v2 = vimcube::math::castToVector3d(t.p2);
+            vimcube::geometry::Vector3d pt = vimcube::math::castToVector3d(p);
+
+            vimcube::geometry::Vector3d normal = vimcube::math::crossProductVector3d(vimcube::math::subtractVector3d(v1, v0), vimcube::math::subtractVector3d(v2, v0));
+
+            vimcube::geometry::Vector3d normalN = vimcube::math::normalizeVector3d(normal);
+            vimcube::geometry::Vector3d weight(normalN.x * (1 / normal.getSize()), normalN.y * (1 / normal.getSize()), normalN.z * (1 / normal.getSize()));
+
+            vimcube::geometry::Vector3d tempU = vimcube::math::crossProductVector3d(vimcube::math::subtractVector3d(v1, pt), vimcube::math::subtractVector3d(v2, pt));
+            vimcube::geometry::Vector3d tempV = vimcube::math::crossProductVector3d(vimcube::math::subtractVector3d(v2, pt), vimcube::math::subtractVector3d(v0, pt));
+            vimcube::geometry::Vector3d tempW = vimcube::math::crossProductVector3d(vimcube::math::subtractVector3d(v0, pt), vimcube::math::subtractVector3d(v1, pt));
+
+            return vimcube::geometry::Point3d(vimcube::math::dotProductVector3d(tempU, weight), vimcube::math::dotProductVector3d(tempV, weight), vimcube::math::dotProductVector3d(tempW, weight));
         }
     }
 
@@ -357,5 +384,151 @@ namespace vimcube::boolean
             return PointRelation::INSIDE;
         }
         return PointRelation::OUTSIDE;
+    }
+
+    /*
+        Function Name : computeIntersectionSegments
+        Parameters : const vimcube::geometry::Mesh& a, const vimcube::geometry::Mesh& b
+        Return Type : IntersectionSegments
+        Description : Collect lists of intersection segments
+    */
+    IntersectionSegments computeIntersectionSegments(const vimcube::geometry::Mesh& a, const vimcube::geometry::Mesh& b)
+    {
+        IntersectionSegments result;
+        result.linesPerFaceA.resize(a.getFaces().size());
+        result.linesPerFaceB.resize(b.getFaces().size());
+
+        vimcube::math::Matrix4by4 m;
+        vimcube::math::constructIdentityMatrix4by4(m);
+        // test AABB of two meshes
+        if (!isAABBOverlap(a.computeBoundingBox(m), b.computeBoundingBox(m)))
+        {
+            return result;
+        }
+
+        // construct triangle & AABB lists for every mesh faces
+        std::vector<vimcube::geometry::Triangle> tA;
+        std::vector<vimcube::geometry::Triangle> tB;
+        std::vector<vimcube::geometry::BoundingBox3d> bbA;
+        std::vector<vimcube::geometry::BoundingBox3d> bbB;
+        for (const auto& fA : a.getFaces())
+        {
+            vimcube::geometry::Triangle t = getTriangleFromFace(a, fA);
+            tA.push_back(t);
+            bbA.push_back(computeTriangleAABB(t.p0, t.p1, t.p2));
+        }
+        for (const auto& fB : b.getFaces())
+        {
+            vimcube::geometry::Triangle t = getTriangleFromFace(b, fB);
+            tB.push_back(t);
+            bbB.push_back(computeTriangleAABB(t.p0, t.p1, t.p2));
+        }
+
+        // call classifyTriangleIntersection
+        size_t idA = 0;
+        for (const auto& bA : bbA) {
+            size_t idB = 0;
+            for (const auto& bB : bbB)
+            {
+                if (isAABBOverlap(bA, bB))
+                {
+                    TriangleIntersection test = classifyTriangleIntersection(tA.at(idA), tB.at(idB));
+                    if (test.relation == TriangleRelation::SEGMENT)
+                    {
+                        result.linesPerFaceA[idA].push_back(vimcube::geometry::Line3d(test.start, test.end));
+                        result.linesPerFaceB[idB].push_back(vimcube::geometry::Line3d(test.start, test.end));
+                    }
+                    else if (test.relation == TriangleRelation::COPLANAR)
+                    {
+                        result.errorMessage = "Cannot execute boolean operation with coplanar meshes";
+                        return result;
+                    }
+                }
+                idB++;
+            }
+            idA++;
+        }
+        return result;
+    }
+
+    /*
+        Function Name : classifyPointInTriangle
+        Parameters : const vimcube::geometry::Point3d& p, const vimcube::geometry::Triangle& t
+        Return Type : TriangleLocationResult
+        Description : Classify location of target point in triangle
+    */
+    TriangleLocationResult classifyPointInTriangle(const vimcube::geometry::Point3d& p, const vimcube::geometry::Triangle& t)
+    {
+        TriangleLocationResult result;
+        if (getTriangleInfoFromPoints(t.p0, t.p1, t.p2).isDegenerate)
+        {
+            result.errorMessage = "Degenerated triangle";
+            return result;
+        }
+
+        vimcube::geometry::Point3d centerPoint = computeBarycentric(p, t);
+
+        vimcube::geometry::Vector3d v0 = vimcube::math::castToVector3d(t.p0);
+        vimcube::geometry::Vector3d v1 = vimcube::math::castToVector3d(t.p1);
+        vimcube::geometry::Vector3d v2 = vimcube::math::castToVector3d(t.p2);
+
+        // compute heights
+        float normalSize = vimcube::math::crossProductVector3d(vimcube::math::subtractVector3d(v1, v0), vimcube::math::subtractVector3d(v2, v0)).getSize();
+        float heightU = normalSize / vimcube::math::subtractVector3d(v2, v1).getSize();
+        float heightV = normalSize / vimcube::math::subtractVector3d(v0, v2).getSize();
+        float heightW = normalSize / vimcube::math::subtractVector3d(v1, v0).getSize();
+
+        // compute distances
+        float distU = centerPoint.x * heightU;
+        float distV = centerPoint.y * heightV;
+        float distW = centerPoint.z * heightW;
+        std::array<float, 3> dists = { distU, distV, distW };
+
+        // count number of zeros
+        int zeroCount = 0;
+        uint32_t zeroPos = 0;
+        uint32_t nonZeroPos = 0;
+        for (size_t i = 0; i < 3; i++)
+        {
+            if (dists[i] < -EPSILON_PLANE_DISTANCE)
+            {
+                return result;
+            }
+            if (std::abs(dists[i]) <= EPSILON_PLANE_DISTANCE)
+            {
+                zeroPos = static_cast<uint32_t>(i);
+                zeroCount++;
+            }
+            else
+            {
+                nonZeroPos = static_cast<uint32_t>(i);
+            }
+        }
+
+        // filter by zeroCount
+        if (zeroCount == 0)
+        {
+            result.location = TriangleLocation::INTERIOR;
+            return result;
+        }
+        if (zeroCount == 1)
+        {
+            result.location = TriangleLocation::EDGE;
+            result.index = (zeroPos + 1) % 3;
+            return result;
+        }
+        if (zeroCount == 2)
+        {
+            result.location = TriangleLocation::VERTEX;
+            result.index = nonZeroPos;
+            return result;
+        }
+        if (zeroCount == 3)
+        {
+            // automatically returns OUTSIDE
+            result.errorMessage = "Invalid triangle";
+            return result;
+        }
+        return result;
     }
 }
